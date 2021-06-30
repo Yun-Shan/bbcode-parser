@@ -89,7 +89,7 @@
   }
 
   function transformDice(tagName, content, arg) {
-    if (content.match(/^((\d+)|(\d+d\d+))(\+((\d+)|(\d+d\d+)))*$/)) {
+    if (content.match(/^((\d+)|(\d*d\d+))(\+((\d+)|(\d*d\d+)))*$/)) {
       return `<div class="dice">假装有骰娘：${content}=${Math.round(Math.random() * 200)}</div>`;
     }
     return transformAsIs(tagName, content, arg);
