@@ -138,12 +138,13 @@
   }
 
   function bbcode2html() {
-    let str = document.getElementById("source").value.replace(/ /g, '&nbsp;');
+    let str = document.getElementById("source").value;
     console.log(str);
 
     if (document.getElementById("xss").checked) {
       str = filterXSS(str);
     }
+    str = str.replace(/ /g, '&nbsp;');
 
     const stack = [];
     let state = STATE_NORMAL;
@@ -187,6 +188,7 @@
             state = STATE_NORMAL;
           } else if (state === STATE_BBCODE_CLOSE_START) {
             let content = '';
+            let successClosed = false;
             out: while (true) {
               const node = stack.pop();
               if (!node) {
@@ -198,16 +200,19 @@
                   break;
                 }
                 case TYPE_BBCODE_OPEN: {
-                  console.log(node.value + '=====' + '[' + tmp);
                   if (node.value === tmp) {
                     stack.push({type: TYPE_TEXT, value: transformTag(node.value, content, node.arg)});
                     content = '';
+                    successClosed = true;
                     break out;
                   } else {
                     content = transformTag(node.value, content, node.arg);
                   }
                 }
               }
+            }
+            if (!successClosed) {
+              content += '[/' + tmp.substring(1) + ']';
             }
             if (content.length > 0) {
               stack.push({type: TYPE_TEXT, value: content});
@@ -232,7 +237,15 @@
     let result = '';
     let node;
     while (node = stack.pop()) {
-      result = node.value + result;
+      if (node.type === TYPE_BBCODE_OPEN) {
+        if (tmp.length > 0) {
+          result += tmp;
+          tmp = '';
+        }
+        result = transformTag(node.value, result, node.arg);
+      } else if (node.type === TYPE_TEXT) {
+        result = node.value + result;
+      }
     }
     if (tmp.length > 0) {
       result += tmp;
