@@ -13,6 +13,6 @@ export class TagHandlerCollapse implements TagHandler {
         if (!arg) {
             arg = "点击展开"
         }
-        return `<details><summary>${arg}</summary>${content}</details>`;
+        return `<div><details><summary><b>${arg}</b></summary><p>${content}</p></details></div>`;
     }
 }
