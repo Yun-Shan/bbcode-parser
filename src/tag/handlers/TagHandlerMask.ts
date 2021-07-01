@@ -1,6 +1,6 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerMask implements TagHandler {
+export class TagHandlerMask extends TagHandler {
     tagName(): string {
         return 'mask';
     };
@@ -13,6 +13,6 @@ export class TagHandlerMask implements TagHandler {
         if (!content) {
             return '';
         }
-        return `<div class="mask">${content}</div>`;
+        return `<div class="mask"><span class="heimu" title="你知道的太多了">${content}</span></div>`;
     }
 }

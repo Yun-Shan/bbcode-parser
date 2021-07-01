@@ -58,8 +58,6 @@ export class BBCODEParser {
 // TODO 自定义解析：标签内部嵌套的所有东西都交给自定义解析器，可以自行处理内容解析。用途：[code][/code]、[list][*]xx[/list]
 // TODO 特殊解析：[code]标签应该忽略正常的闭合标签，直到找到了[/code]或者到达字符串末尾
     bbcode2html(rawContent: string): string {
-        rawContent = rawContent.replace(/ /g, '&nbsp;');
-
         // TODO any改接口
         const stack: any[] = [];
         let state = BBCODEParser.STATE_NORMAL;
@@ -70,7 +68,7 @@ export class BBCODEParser {
                 case '[': {
                     if (state === BBCODEParser.STATE_NORMAL && idx < rawContent.length) {
                         if (tmp.length > 0) {
-                            stack.push({type: BBCODEParser.TYPE_TEXT, value: tmp});
+                            stack.push({type: BBCODEParser.TYPE_TEXT, value: tmp.replace(/ /g, '&nbsp;')});
                             tmp = '';
                         }
                         tmp = '[';
@@ -83,7 +81,7 @@ export class BBCODEParser {
                         }
                     } else if (state === BBCODEParser.STATE_BBCODE_OPEN_START || state === BBCODEParser.STATE_BBCODE_CLOSE_START) {
                         if (tmp.length > 0) {
-                            stack.push({type: BBCODEParser.TYPE_TEXT, value: tmp});
+                            stack.push({type: BBCODEParser.TYPE_TEXT, value: tmp.replace(/ /g, '&nbsp;')});
                             tmp = '[';
                         }
                     } else {
@@ -93,13 +91,16 @@ export class BBCODEParser {
                 }
                 case ']': {
                     if (state === BBCODEParser.STATE_BBCODE_OPEN_START) {
-                        let arg = undefined;
-                        const argIdx = tmp.indexOf('=');
+                        let arg = '';
+                        let argIdx = tmp.indexOf(' ');
+                        if (argIdx <= 0) {
+                            argIdx = tmp.indexOf('=');
+                        }
                         if (argIdx > 0) {
                             arg = tmp.substring(argIdx + 1);
                             tmp = tmp.substring(0, argIdx);
                         }
-                        stack.push({type: BBCODEParser.TYPE_BBCODE_OPEN, value: tmp, arg: arg});
+                        stack.push({type: BBCODEParser.TYPE_BBCODE_OPEN, value: tmp, arg: arg.replace(/ /g, '&nbsp;')});
                         tmp = '';
                         state = BBCODEParser.STATE_NORMAL;
                     } else if (state === BBCODEParser.STATE_BBCODE_CLOSE_START) {
@@ -112,7 +113,7 @@ export class BBCODEParser {
                             }
                             switch (node.type) {
                                 case BBCODEParser.TYPE_TEXT: {
-                                    content = node.value + content;
+                                    content = node.value.replace(/ /g, '&nbsp;') + content;
                                     break;
                                 }
                                 case BBCODEParser.TYPE_BBCODE_OPEN: {

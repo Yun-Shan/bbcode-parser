@@ -1,6 +1,6 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerColor implements TagHandler {
+export class TagHandlerColor extends TagHandler {
     tagName(): string {
         return 'color';
     };

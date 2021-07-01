@@ -1,6 +1,6 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerDice implements TagHandler {
+export class TagHandlerDice extends TagHandler {
     tagName(): string {
         return 'dice';
     };
