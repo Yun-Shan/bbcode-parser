@@ -1,0 +1,33 @@
+{
+  "name": "bbcode-parser",
+  "sideEffects": false,
+  "version": "1.0.0",
+  "description": "a great bbcode parser",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "build--prod": "webpack --mode=production",
+    "build--php": "ts2php -c ts2php.config.js src/ -o dist-php/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yun-Shan/bbcode-parser.git"
+  },
+  "keywords": [
+    "bbcode"
+  ],
+  "author": "YunShan",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Yun-Shan/bbcode-parser/issues"
+  },
+  "homepage": "https://github.com/Yun-Shan/bbcode-parser#readme",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.3.2",
+    "ts-loader": "^9.2.3",
+    "typescript": "^4.3.4",
+    "webpack": "^5.41.1",
+    "webpack-cli": "^4.7.2"
+  }
+}
