@@ -16,3 +16,7 @@ defaultBBCodeParser.registerTagHandler(new TagHandlerDice());
 
 export { defaultBBCodeParser };
 
+declare var global: any;
+global.bbcode2html = function (rawContent: string) {
+    return defaultBBCodeParser.bbcode2html(rawContent);
+}

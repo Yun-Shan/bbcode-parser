@@ -1,6 +1,6 @@
 export interface TagHandler {
-    readonly tagName: string;
-    readonly tagAliases: string[];
+    tagName(): string;
+    tagAliases(): string[];
 
     /**
      *

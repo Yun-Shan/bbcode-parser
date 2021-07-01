@@ -1,4 +1,4 @@
 module.exports = {
-  emitHeader: false,
+  emitHeader: true,
   namespace: 'bbcode_parser'
 };

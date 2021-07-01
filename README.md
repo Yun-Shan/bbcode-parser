@@ -21,4 +21,5 @@ javascript:
 `npm run build--prod`  
 php:
 `npm run build--php`
-> 构建php需要先安装ts2php：`npm i -g ts2php`
+> 构建php需要先安装ts2php：`npm i -g ts2php`  
+> 需要注意的是由于毕竟是语言转换，所以构建出来的php不一定能直接运行，可能会有一些需要手动修改的地方
