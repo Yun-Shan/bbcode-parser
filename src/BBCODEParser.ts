@@ -140,7 +140,7 @@ export class BBCODEParser {
                                 }
                                 switch (node.type) {
                                     case BBCODEParser.TYPE_TEXT: {
-                                        content = node.value.replace(/ /g, '&nbsp;') + content;
+                                        content = node.value + content;
                                         break;
                                     }
                                     case BBCODEParser.TYPE_BBCODE_OPEN: {
@@ -225,6 +225,10 @@ export class BBCODEParser {
             switch (node.nodeType) {
                 case node.ELEMENT_NODE: {
                     const e = node as Element;
+                    if (e.tagName.toLowerCase() === 'br') {
+                        result += '\n';
+                        break;
+                    }
                     let bbcodeTag = e.getAttribute('data-bbcode-tag');
                     if (!bbcodeTag) {
                         bbcodeTag = e.tagName.toLowerCase();
