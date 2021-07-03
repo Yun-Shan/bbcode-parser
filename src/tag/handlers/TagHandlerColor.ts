@@ -19,7 +19,7 @@ export class TagHandlerColor extends TagHandler {
         if (arg.match(/^[0-9a-fA-F]{6}$/)) {
             arg = '#' + arg;
         }
-        return `<span style="color:${arg}">${content}</span>`;
+        return `<div style="color:${arg};display: inline-block">${content}</div>`;
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {

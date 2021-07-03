@@ -19,8 +19,8 @@ export abstract class TagHandler {
     abstract encodeToHtml(tagLabel: string, arg: string, content: string): string|false;
     abstract decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string|false;
 
-    getArg(args: string, name: string) {
-
+    splitArgs(rawArg: string): string[] {
+        return rawArg.split(';');
     }
 }
 

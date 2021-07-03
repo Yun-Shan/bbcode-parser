@@ -98,10 +98,7 @@ export class BBCODEParser {
                     if (state === BBCODEParser.STATE_BBCODE_OPEN_START) {
                         let tag = '';
                         let arg = '';
-                        let argIdx = tmp.indexOf(' ');
-                        if (argIdx <= 0) {
-                            argIdx = tmp.indexOf('=');
-                        }
+                        let argIdx = tmp.indexOf('=');
                         if (argIdx > 0) {
                             arg = tmp.substring(argIdx + 1);
                             tag = tmp.substring(0, argIdx);
@@ -118,7 +115,7 @@ export class BBCODEParser {
                             } else {
                                 stack.push({
                                     type: BBCODEParser.TYPE_BBCODE_OPEN,
-                                    value: tmp,
+                                    value: tag,
                                     arg: arg.replace(/ /g, '&nbsp;')
                                 });
                             }
@@ -200,6 +197,7 @@ export class BBCODEParser {
         if (tmp.length > 0) {
             result += tmp;
         }
+        console.log(result);
         return result;
     }
 

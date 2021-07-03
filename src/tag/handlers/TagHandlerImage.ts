@@ -14,6 +14,14 @@ export class TagHandlerImage extends TagHandler {
     }
 
     encodeToHtml(tagLabel: string, arg: string, content: string): string {
+        const args = this.splitArgs(arg);
+        const src = args[0];
+        const width = args.length > 1 ? args[1] : '';
+        const height = args.length > 2 ? args[2] : '';
+        const marginH = args.length > 3 ? args[3] : '';
+        const marginV = args.length > 4 ? args[4] : '';
+        const float = args.length > 5 ? args[5] : '';
+
         return `<${this.tagName()} src="${arg}"/>`;
     }
 
