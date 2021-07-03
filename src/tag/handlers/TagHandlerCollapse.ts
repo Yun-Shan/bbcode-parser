@@ -16,10 +16,14 @@ export class TagHandlerCollapse extends TagHandler {
         if (arg.indexOf('title=') === 0) {
             arg = arg.substring(6);
         }
-        return `<div><details><summary><b>${arg}</b></summary><p>${content}</p></details></div>`;
+        return `<div data-tag="collapse"><details><summary><b class="collapse-title">${arg}</b></summary><div class="collapse-content">${content}</div></details></div>`;
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[collapse]${resloveFun(element.getElementsByClassName('collapse-content'))}[/collapse]`;
+        const titleE = element.getElementsByClassName('collapse-title');
+        const title = titleE.length > 0 ? titleE[0].textContent : '点击展开';
+        const contentE = element.getElementsByClassName('collapse-content');
+        const content = contentE.length > 0 ? resloveFun(contentE[0]) : '';
+        return `[collapse=${title}]${content}[/collapse]`;
     }
 }

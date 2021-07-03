@@ -32,17 +32,24 @@
     <textarea id="source" style="width: 600px;height: 300px"></textarea>
     <div>可用bbcode
         <br/>[color=red][/color] 颜色(支持颜色名比如red或者16进制比如#66ccff)
+        <br/>[size=1][/size] 文字大小(1-7)
+        <br/>[quote][/quote] 引用
+        <br/>[h1][/h1] 标题，还可用h2、h3
+        <br/>[hr] 水平分割线
+        <br/>[img=src] 图片
+        <br/>[url=src]text[/url] 超链接
         <br/>[b][/b] 加粗
         <br/>[i][/i] 斜体
-        <br/>[mask][/mask] 黑幕
+        <br/>[mask][/mask] (未完工)黑幕
         <br/>[collapse=标题][/collapse] 折叠
-        <br/>[dice]1d10[/dice] 假骰娘
+        <br/>[dice]1d10[/dice] (未完工)假骰娘
         <br/>回车换行
     </div>
 </div>
 <input type="checkbox" id="xss">
 <label for="xss">xss过滤</label>
 <button style="margin-right: 50px" onclick="encodeToHtml()">解析</button>
+<button style="margin-right: 50px" onclick="decodeFromHtml()">反解析</button>
 <button onclick="document.getElementById('source').value = CODE_1">并列预设</button>
 <button onclick="document.getElementById('source').value = CODE_2">嵌套预设</button>
 <button onclick="document.getElementById('source').value = CODE_3">错位预设1</button>
@@ -68,6 +75,12 @@
     }
 
     document.getElementById("result").innerHTML = BBCODE.bbcode2html(str);
+  }
+  function decodeFromHtml() {
+    let html = document.getElementById("result").innerHTML;
+    console.log(html);
+
+    document.getElementById("source").value = BBCODE.html2bbcode(html);
   }
 </script>
 </body>

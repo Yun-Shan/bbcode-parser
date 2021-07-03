@@ -1,8 +1,8 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerColor extends TagHandler {
+export class TagHandlerSize extends TagHandler {
     tagName(): string {
-        return 'color';
+        return 'size';
     };
 
     tagAliases(): string[] {
@@ -13,19 +13,16 @@ export class TagHandlerColor extends TagHandler {
         if (!content) {
             return '';
         }
-        if (!arg) {
+        if (!arg || !arg.match(/^[1-7]$/)) {
             return content;
-        }
-        if (arg.match(/^[0-9a-fA-F]{6}$/)) {
-            arg = '#' + arg;
         }
         // 只有font能同时兼任行内元素和块状元素，所以即便是font被弃用也得用这个
         // noinspection HtmlDeprecatedTag,HtmlDeprecatedAttribute
-        return `<font color="${arg}" data-tag="color">${content}</font>`;
+        return `<font size="${arg}" data-tag="size">${content}</font>`;
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[color=${element.getAttribute('color')}]${resloveFun(element.childNodes)}[/color]`;
+        return `[size=${element.getAttribute('size')}]${resloveFun(element.childNodes)}[/size]`;
     }
 }
 

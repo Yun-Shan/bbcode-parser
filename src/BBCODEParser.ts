@@ -53,6 +53,9 @@ export class BBCODEParser {
     registerTagHandler(handler: TagHandler) {
         this.TAG_HANDLER_MAP[handler.tagName()] = handler;
         this.TAG_ALIASES_MAP[handler.tagName()] = handler.tagName();
+        for (const alias of handler.tagAliases()) {
+            this.TAG_ALIASES_MAP[alias] = handler.tagName();
+        }
     }
 
     private getHandler(tagName: string) {
@@ -227,7 +230,7 @@ export class BBCODEParser {
                         result += '\n';
                         break;
                     }
-                    let bbcodeTag = e.getAttribute('data-bbcode-tag');
+                    let bbcodeTag = e.getAttribute('data-tag');
                     if (!bbcodeTag) {
                         bbcodeTag = e.tagName.toLowerCase();
                     }
