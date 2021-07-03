@@ -1,8 +1,8 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerBold extends TagHandler {
+export class TagHandlerStrike extends TagHandler {
     tagName(): string {
-        return 'b';
+        return 's';
     };
 
     tagAliases(): string[] {
@@ -17,6 +17,6 @@ export class TagHandlerBold extends TagHandler {
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[b]${resloveFun(element.childNodes)}[/b]`;
+        return `[s]${resloveFun(element.childNodes)}[/s]`;
     }
 }

@@ -9,7 +9,7 @@ export class TagHandlerColor extends TagHandler {
         return [];
     };
 
-    handle(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string): string {
         if (!content) {
             return '';
         }
@@ -20,6 +20,10 @@ export class TagHandlerColor extends TagHandler {
             arg = '#' + arg;
         }
         return `<span style="color:${arg}">${content}</span>`;
+    }
+
+    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+        return `[color=${element.getAttribute('data-bbcode-color')}]${resloveFun(element.childNodes)}[/color]`;
     }
 }
 

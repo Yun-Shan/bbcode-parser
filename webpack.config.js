@@ -22,7 +22,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'bundle.js',
+    filename: 'bbcode.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },

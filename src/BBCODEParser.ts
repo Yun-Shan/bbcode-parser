@@ -33,7 +33,7 @@ export class BBCODEParser {
 
         const handler = this.TAG_HANDLER_MAP[tagName];
         if (handler) {
-            const result = handler.handle(tagName, arg, content);
+            const result = handler.encodeToHtml(tagName, arg, content);
             if (typeof result === 'string') {
                 return result;
             }
@@ -53,6 +53,11 @@ export class BBCODEParser {
     registerTagHandler(handler: TagHandler) {
         this.TAG_HANDLER_MAP[handler.tagName()] = handler;
         this.TAG_ALIASES_MAP[handler.tagName()] = handler.tagName();
+    }
+
+    private getHandler(tagName: string) {
+        tagName = this.TAG_ALIASES_MAP[tagName];
+        return this.TAG_HANDLER_MAP[tagName];
     }
 
 // TODO 自定义解析：标签内部嵌套的所有东西都交给自定义解析器，可以自行处理内容解析。用途：[code][/code]、[list][*]xx[/list]
@@ -91,6 +96,7 @@ export class BBCODEParser {
                 }
                 case ']': {
                     if (state === BBCODEParser.STATE_BBCODE_OPEN_START) {
+                        let tag = '';
                         let arg = '';
                         let argIdx = tmp.indexOf(' ');
                         if (argIdx <= 0) {
@@ -98,47 +104,72 @@ export class BBCODEParser {
                         }
                         if (argIdx > 0) {
                             arg = tmp.substring(argIdx + 1);
-                            tmp = tmp.substring(0, argIdx);
+                            tag = tmp.substring(0, argIdx);
+                        } else {
+                            tag = tmp;
                         }
-                        stack.push({type: BBCODEParser.TYPE_BBCODE_OPEN, value: tmp, arg: arg.replace(/ /g, '&nbsp;')});
-                        tmp = '';
+                        const handler = this.getHandler(tag.substring(1));
+                        if (handler) {
+                            if (handler.isSelfClose()) {
+                                stack.push({
+                                    type: BBCODEParser.TYPE_TEXT,
+                                    value: this.transformTag(tag, '', arg.replace(/ /g, '&nbsp;'))
+                                });
+                            } else {
+                                stack.push({
+                                    type: BBCODEParser.TYPE_BBCODE_OPEN,
+                                    value: tmp,
+                                    arg: arg.replace(/ /g, '&nbsp;')
+                                });
+                            }
+                            tmp = '';
+                        } else {
+                            tmp += ']';
+                        }
                         state = BBCODEParser.STATE_NORMAL;
                     } else if (state === BBCODEParser.STATE_BBCODE_CLOSE_START) {
-                        let content = '';
-                        let successClosed = false;
-                        out: while (true) {
-                            const node = stack.pop();
-                            if (!node) {
-                                break;
-                            }
-                            switch (node.type) {
-                                case BBCODEParser.TYPE_TEXT: {
-                                    content = node.value.replace(/ /g, '&nbsp;') + content;
+                        const tag = tmp.substring(2);
+                        const handler = this.getHandler(tag);
+                        if (handler && !handler.isSelfClose()) {
+                            let content = '';
+                            let successClosed = false;
+                            out: while (true) {
+                                const node = stack.pop();
+                                if (!node) {
                                     break;
                                 }
-                                case BBCODEParser.TYPE_BBCODE_OPEN: {
-                                    if (node.value.substring(1) === tmp.substring(2)) {
-                                        stack.push({
-                                            type: BBCODEParser.TYPE_TEXT,
-                                            value: this.transformTag(node.value, content, node.arg)
-                                        });
-                                        content = '';
-                                        successClosed = true;
-                                        break out;
-                                    } else {
-                                        content = this.transformTag(node.value, content, node.arg);
+                                switch (node.type) {
+                                    case BBCODEParser.TYPE_TEXT: {
+                                        content = node.value.replace(/ /g, '&nbsp;') + content;
+                                        break;
+                                    }
+                                    case BBCODEParser.TYPE_BBCODE_OPEN: {
+                                        if (node.value.substring(1) === tmp.substring(2)) {
+                                            stack.push({
+                                                type: BBCODEParser.TYPE_TEXT,
+                                                value: this.transformTag(node.value, content, node.arg)
+                                            });
+                                            content = '';
+                                            successClosed = true;
+                                            break out;
+                                        } else {
+                                            content = this.transformTag(node.value, content, node.arg);
+                                        }
                                     }
                                 }
                             }
+                            if (!successClosed) {
+                                content += tmp + ']';
+                            }
+                            if (content.length > 0) {
+                                stack.push({type: BBCODEParser.TYPE_TEXT, value: content});
+                            }
+                            tmp = '';
+                            state = BBCODEParser.STATE_NORMAL;
+                        } else {
+                            tmp += ']';
+                            state = BBCODEParser.STATE_NORMAL;
                         }
-                        if (!successClosed) {
-                            content += tmp + ']';
-                        }
-                        if (content.length > 0) {
-                            stack.push({type: BBCODEParser.TYPE_TEXT, value: content});
-                        }
-                        tmp = '';
-                        state = BBCODEParser.STATE_NORMAL;
                     } else {
                         tmp += char;
                     }
@@ -168,6 +199,51 @@ export class BBCODEParser {
         }
         if (tmp.length > 0) {
             result += tmp;
+        }
+        return result;
+    }
+
+    html2bbcode(html: string): string {
+        let domList = Array.from(new DOMParser().parseFromString(html, 'text/html').getElementsByTagName('body')[0].childNodes);
+        let result = '';
+        for (const dom of domList) {
+            result += this.resloveNode(dom);
+        }
+        return result;
+    }
+
+    private resloveNode(nodes: Nodes): string {
+        let result = '';
+        if (!Array.isArray(nodes)) {
+            if (nodes instanceof NodeList || nodes instanceof HTMLCollection) {
+                nodes = Array.from(nodes);
+            } else {
+                nodes = [nodes];
+            }
+        }
+        for (const node of nodes) {
+            switch (node.nodeType) {
+                case node.ELEMENT_NODE: {
+                    const e = node as Element;
+                    let bbcodeTag = e.getAttribute('data-bbcode-tag');
+                    if (!bbcodeTag) {
+                        bbcodeTag = e.tagName.toLowerCase();
+                    }
+                    const handler = this.getHandler(bbcodeTag);
+                    if (handler) {
+                        result += handler.decodeFromHtml(e, this.resloveNode.bind(this));
+                    } else {
+                        result += this.resloveNode(Array.from(node.childNodes));
+                    }
+                    break;
+                }
+                case node.TEXT_NODE: {
+                    result += node.textContent.replace(/[\n\r ]/g, '');
+                    break;
+                }
+                default:
+                    break;
+            }
         }
         return result;
     }

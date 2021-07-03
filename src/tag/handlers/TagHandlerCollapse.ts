@@ -9,7 +9,7 @@ export class TagHandlerCollapse extends TagHandler {
         return [];
     };
 
-    handle(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string): string {
         if (!arg) {
             arg = "点击展开"
         }
@@ -17,5 +17,9 @@ export class TagHandlerCollapse extends TagHandler {
             arg = arg.substring(6);
         }
         return `<div><details><summary><b>${arg}</b></summary><p>${content}</p></details></div>`;
+    }
+
+    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+        return `[collapse]${resloveFun(element.getElementsByClassName('collapse-content'))}[/collapse]`;
     }
 }

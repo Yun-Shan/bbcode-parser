@@ -9,10 +9,14 @@ export class TagHandlerMask extends TagHandler {
         return [];
     };
 
-    handle(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string): string {
         if (!content) {
             return '';
         }
         return `<div class="mask"><span class="heimu" title="你知道的太多了">${content}</span></div>`;
+    }
+
+    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+        return `[mask]${resloveFun(element.childNodes)}[/mask]`;
     }
 }

@@ -1,22 +1,23 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerBold extends TagHandler {
+export class TagHandlerHorizontalRule extends TagHandler {
     tagName(): string {
-        return 'b';
+        return 'hr';
     };
 
     tagAliases(): string[] {
         return [];
     };
 
+    isSelfClose(): boolean {
+        return true;
+    }
+
     encodeToHtml(tagLabel: string, arg: string, content: string): string {
-        if (!content) {
-            return '';
-        }
-        return `<${this.tagName()}>${content}</${this.tagName()}>`;
+        return '<hr/>';
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[b]${resloveFun(element.childNodes)}[/b]`;
+        return '[hr]';
     }
 }

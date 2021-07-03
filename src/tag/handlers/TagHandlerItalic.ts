@@ -9,10 +9,14 @@ export class TagHandlerItalic extends TagHandler {
         return [];
     };
 
-    handle(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string): string {
         if (!content) {
             return '';
         }
         return `<${this.tagName()}>${content}</${this.tagName()}>`;
+    }
+
+    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+        return `[i]${resloveFun(element.childNodes)}[/i]`;
     }
 }
