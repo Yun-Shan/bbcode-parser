@@ -9,14 +9,18 @@ export class TagHandlerCollapse extends TagHandler {
         return [];
     };
 
-    encodeToHtml(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!arg) {
             arg = "点击展开"
         }
         if (arg.indexOf('title=') === 0) {
             arg = arg.substring(6);
         }
-        return `<div data-tag="collapse"><details><summary><b class="collapse-title">${arg}</b></summary><div class="collapse-content">${content}</div></details></div>`;
+        if (forEditor) {
+            return `<div data-tag="collapse" class="collapse"><span>折叠标题：</span><div class="collapse-title">${arg}</div><span>折叠内容：</span><div class="collapse-content">${content}</div></div>`;
+        } else {
+            return `<div data-tag="collapse"><details><summary><b class="collapse-title">${arg}</b></summary><div class="collapse-content">${content}</div></details></div>`;
+        }
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {

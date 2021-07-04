@@ -9,7 +9,7 @@ export class TagHandlerHeader extends TagHandler {
         return ['h2', 'h3'];
     };
 
-    encodeToHtml(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!content || content.trim().length === 0) {
             return '';
         }

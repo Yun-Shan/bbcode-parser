@@ -9,7 +9,7 @@ export class TagHandlerBlockquote extends TagHandler {
         return ['blockquote'];
     };
 
-    encodeToHtml(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!content) {
             return '';
         }

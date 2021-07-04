@@ -3,14 +3,57 @@ Copyright (c) 2003-2021, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 
+.collapse {
+    padding: 8px;
+    margin: 10px;
+    background: #eee;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 1px #fff inset, 0 -1px 0 #ccc inset;
+}
+
+.collapse-title, .collapse-content {
+    box-shadow: 0 1px 1px #ddd inset;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.collapse-title {
+    margin: 0 0 8px;
+    padding: 5px 8px;
+    font-weight: bold;
+}
+
+.collapse-content {
+    padding: 0 8px;
+}
+
+.dice {
+    background: #eee;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 1px #fff inset, 0 -1px 0 #ccc inset;
+    padding: 7px;
+    width: fit-content;
+}
+
+.dice-expression {
+    display: inline-block;
+    min-width: 50px;
+    background-color: white;
+}
+
 .mask {
     display: inline-block;
 }
+
 .mask:not(:hover),.mask:not(:hover) * {
     border: none;
     background: rgba(0,0,0,1) !important;
     color: black;
 }
+
 .dice {
     display: inline-block;
     width: fit-content;
@@ -47,13 +90,17 @@ body {
 }
 
 blockquote {
-    font-style: italic;
     font-family: Georgia, Times, "Times New Roman", serif;
+    padding: 2px 0;
     border-style: solid;
     border-color: #ccc;
     border-width: 0;
+}
+
+.cke_contents_ltr blockquote {
+    padding-left: 20px;
+    padding-right: 8px;
     border-left-width: 5px;
-    padding: 2px 8px 2px 20px;
 }
 
 .cke_contents_rtl blockquote {

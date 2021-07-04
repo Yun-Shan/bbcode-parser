@@ -20,16 +20,17 @@
         <br/>[url=src]text[/url] 超链接
         <br/>[b][/b] 加粗
         <br/>[i][/i] 斜体
-        <br/>[mask][/mask] (未完工)黑幕
+        <br/>[mask][/mask] 黑幕
         <br/>[collapse=标题][/collapse] 折叠
-        <br/>[dice]1d10[/dice] (未完工)假骰娘
+        <br/>[dice]1d10[/dice] 假骰娘
+        <br/>[list=1][*]a[*]b[/list] 列表
         <br/>回车换行
     </div>
 </div>
 <input type="checkbox" id="xss">
 <label for="xss">xss过滤</label>
 <button style="margin-right: 50px" onclick="encodeToHtml()">解析</button>
-<button style="margin-right: 50px" onclick="decodeFromHtml()">反解析</button>
+<button style="margin-right: 50px; display: none" onclick="decodeFromHtml()">反解析</button>
 <button onclick="document.getElementById('source').value = CODE_1">并列预设</button>
 <button onclick="document.getElementById('source').value = CODE_2">嵌套预设</button>
 <button onclick="document.getElementById('source').value = CODE_3">错位预设1</button>

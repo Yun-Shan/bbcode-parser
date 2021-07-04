@@ -13,7 +13,7 @@ export class TagHandlerImage extends TagHandler {
         return true;
     }
 
-    encodeToHtml(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         const args = this.splitArgs(arg);
         const src = args[0];
         const width = args.length > 1 ? args[1] : '';

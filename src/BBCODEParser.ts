@@ -21,7 +21,7 @@ export class BBCODEParser {
         return `[${openTag}]${content}[/${tagName}]`;
     }
 
-    transformTag(tagLabel: string, content: string, arg: string): string {
+    transformTag(tagLabel: string, content: string, arg: string, forEditor: boolean): string {
         if (content === undefined || content === null) {
             content = '';
         }
@@ -33,12 +33,12 @@ export class BBCODEParser {
 
         const handler = this.TAG_HANDLER_MAP[tagName];
         if (handler) {
-            const result = handler.encodeToHtml(tagName, arg, content);
+            const result = handler.encodeToHtml(tagLabel, arg, content, forEditor);
             if (typeof result === 'string') {
                 return result;
             }
         }
-        return this.transformAsIs(tagName, arg, content);
+        return this.transformAsIs(tagLabel, arg, content);
     }
 
     filterXSS(str: string): string {
@@ -65,9 +65,10 @@ export class BBCODEParser {
 
 // TODO 自定义解析：标签内部嵌套的所有东西都交给自定义解析器，可以自行处理内容解析。用途：[code][/code]、[list][*]xx[/list]
 // TODO 特殊解析：[code]标签应该忽略正常的闭合标签，直到找到了[/code]或者到达字符串末尾
-    bbcode2html(rawContent: string): string {
+    bbcode2html(rawContent: string, forEditor: boolean = false): string {
         // TODO any改接口
         const stack: any[] = [];
+        const parentMap: any = {};
         let state = BBCODEParser.STATE_NORMAL;
         let tmp = '';
         for (let idx = 0; idx < rawContent.length; idx++) {
@@ -109,11 +110,25 @@ export class BBCODEParser {
                             tag = tmp;
                         }
                         const handler = this.getHandler(tag.substring(1));
+                        let allowHandler = false;
                         if (handler) {
+                            const allowParents = handler.allowParents(tag.substring(1));
+                            if (allowParents.length > 0) {
+                                for (const parentName of allowParents) {
+                                    if (parentMap[parentName]) {
+                                        allowHandler = true;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                allowHandler = true;
+                            }
+                        }
+                        if (allowHandler) {
                             if (handler.isSelfClose()) {
                                 stack.push({
                                     type: BBCODEParser.TYPE_TEXT,
-                                    value: this.transformTag(tag, '', arg.replace(/ /g, '&nbsp;'))
+                                    value: this.transformTag(tag, '', arg.replace(/ /g, '&nbsp;'), forEditor)
                                 });
                             } else {
                                 stack.push({
@@ -121,6 +136,8 @@ export class BBCODEParser {
                                     value: tag,
                                     arg: arg.replace(/ /g, '&nbsp;')
                                 });
+                                const realTag = tag.substring(1);
+                                parentMap[realTag] = parentMap[realTag] ? parentMap[realTag] + 1 : 1;
                             }
                             tmp = '';
                         } else {
@@ -144,16 +161,20 @@ export class BBCODEParser {
                                         break;
                                     }
                                     case BBCODEParser.TYPE_BBCODE_OPEN: {
-                                        if (node.value.substring(1) === tmp.substring(2)) {
+                                        const subTag = node.value.substring(1);
+                                        if (parentMap[subTag]) {
+                                            parentMap[subTag] = Math.max(parentMap[subTag] - 1, 0);
+                                        }
+                                        if (tag === subTag) {
                                             stack.push({
                                                 type: BBCODEParser.TYPE_TEXT,
-                                                value: this.transformTag(node.value, content, node.arg)
+                                                value: this.transformTag(node.value, content, node.arg, forEditor)
                                             });
                                             content = '';
                                             successClosed = true;
                                             break out;
                                         } else {
-                                            content = this.transformTag(node.value, content, node.arg);
+                                            content = this.transformTag(node.value, content, node.arg, forEditor);
                                         }
                                     }
                                 }
@@ -192,7 +213,7 @@ export class BBCODEParser {
                     result += tmp;
                     tmp = '';
                 }
-                result = this.transformTag(node.value, result, node.arg);
+                result = this.transformTag(node.value, result, node.arg, forEditor);
             } else if (node.type === BBCODEParser.TYPE_TEXT) {
                 result = node.value + result;
             }

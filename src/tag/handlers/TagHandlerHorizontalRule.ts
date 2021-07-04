@@ -13,7 +13,7 @@ export class TagHandlerHorizontalRule extends TagHandler {
         return true;
     }
 
-    encodeToHtml(tagLabel: string, arg: string, content: string): string {
+    encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         return '<hr/>';
     }
 
