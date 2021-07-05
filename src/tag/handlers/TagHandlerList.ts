@@ -31,14 +31,14 @@ export class TagHandlerList extends TagHandler {
         return `<${tag}>${content}</${tag}>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
         switch (element.tagName.toLowerCase()) {
             case 'ul':
-                return `[list]${resloveFun(element.childNodes)}[/list]`;
+                return `[list]${resolveFun(element.childNodes, forEditor)}[/list]`;
             case 'ol':
-                return `[list=1]${resloveFun(element.childNodes)}[/list]`;
+                return `[list=1]${resolveFun(element.childNodes, forEditor)}[/list]`;
             case 'li':
-                return `[*]${resloveFun(element.childNodes)}`;
+                return `[*]${resolveFun(element.childNodes, forEditor)}`;
             default:
                 return false;
         }

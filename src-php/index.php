@@ -15,6 +15,8 @@ namespace bbcode_parser {
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerSize.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerStrike.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerUnderline.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerNotice.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerVideo.php");
     require_once(dirname(__FILE__) . "/BBCODEParser.php");
     global $defaultBBCodeParser;
     $defaultBBCodeParser = new BBCODEParser();
@@ -33,6 +35,8 @@ namespace bbcode_parser {
     $defaultBBCodeParser->registerTagHandler(new TagHandlerSize());
     $defaultBBCodeParser->registerTagHandler(new TagHandlerStrike());
     $defaultBBCodeParser->registerTagHandler(new TagHandlerUnderline());
+    $defaultBBCodeParser->registerTagHandler(new TagHandlerNotice());
+    $defaultBBCodeParser->registerTagHandler(new TagHandlerVideo());
 }
 
 namespace {

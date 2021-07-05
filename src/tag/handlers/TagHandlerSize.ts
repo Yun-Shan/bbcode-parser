@@ -17,8 +17,8 @@ export class TagHandlerSize extends TagHandler {
         return `<font size="${arg}" data-tag="size">${content}</font>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[size=${element.getAttribute('size')}]${resloveFun(element.childNodes)}[/size]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+        return `[size=${element.getAttribute('size')}]${resolveFun(element.childNodes, forEditor)}[/size]`;
     }
 }
 

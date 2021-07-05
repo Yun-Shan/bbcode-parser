@@ -16,7 +16,7 @@ export class TagHandlerUnderline extends TagHandler {
         return `<${this.tagName()}>${content}</${this.tagName()}>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[u]${resloveFun(element.childNodes)}[/u]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+        return `[u]${resolveFun(element.childNodes, forEditor)}[/u]`;
     }
 }

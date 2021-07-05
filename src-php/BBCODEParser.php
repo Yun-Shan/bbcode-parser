@@ -13,7 +13,7 @@ class BBCODEParser
     private $TAG_HANDLER_MAP = [];
     private $TAG_ALIASES_MAP = [];
 
-    function transformAsIs($tagName, $arg, $content) {
+    function transformAsIs($tagName, $arg, $content): string {
         if ($arg) {
             $openTag = $tagName . "=" . $arg;
         } else {
@@ -22,7 +22,7 @@ class BBCODEParser
         return "[" . $openTag . "]" . $content . "[/" . $tagName . "]";
     }
 
-    function transformTag($tagLabel, $content, $arg) {
+    function transformTag($tagLabel, $content, $arg): string {
         if (empty($content)) {
             $content = "";
         }
@@ -53,11 +53,7 @@ class BBCODEParser
         }
     }
 
-    /**
-     * @param $tagName
-     * @return TagHandler
-     */
-    function getHandler($tagName) {
+    function getHandler($tagName): TagHandler {
         $tagName = $this->TAG_ALIASES_MAP[$tagName];
         return $this->TAG_HANDLER_MAP[$tagName];
     }
@@ -126,7 +122,7 @@ class BBCODEParser
                             if ($handler->isSelfClose()) {
                                 $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($tag, "", $this->filterXSS($arg))];
                             } else {
-                                $stack[] = ["type" => self::$TYPE_BBCODE_OPEN, "value" => $tmp, "arg" => $this->filterXSS($arg)];
+                                $stack[] = ["type" => self::$TYPE_BBCODE_OPEN, "value" => $tag, "arg" => $this->filterXSS($arg)];
                                 $parentMap[$realTag] = $parentMap[$realTag] ? $parentMap[$realTag] + 1 : 1;
                             }
 
@@ -184,11 +180,6 @@ class BBCODEParser
                     }
                     break;
                 }
-                case "\n":
-                {
-                    $tmp .= "<br/>";
-                    break;
-                }
                 default:
                 {
                     $tmp .= $char;
@@ -211,6 +202,6 @@ class BBCODEParser
         if (!empty($tmp)) {
             $result .= $tmp;
         }
-        return $result;
+        return mb_ereg_replace('\n', '<br/>', $result, BBCODE_STRING_CHARSET);
     }
 }

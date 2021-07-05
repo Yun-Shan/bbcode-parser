@@ -15,6 +15,8 @@ import { TagHandlerLink } from './tag/handlers/TagHandlerLink';
 import { TagHandlerBlockquote } from './tag/handlers/TagHandlerBlockquote';
 import { TagHandlerHeader } from './tag/handlers/TagHandlerHeader';
 import { TagHandlerList } from './tag/handlers/TagHandlerList';
+import {TagHandlerNotice} from "./tag/handlers/TagHandlerNotice";
+import {TagHandlerVideo} from "./tag/handlers/TagHandlerVideo";
 
 const defaultBBCodeParser = new BBCODEParser();
 defaultBBCodeParser.registerTagHandler(new TagHandlerBold());
@@ -32,6 +34,8 @@ defaultBBCodeParser.registerTagHandler(new TagHandlerLink());
 defaultBBCodeParser.registerTagHandler(new TagHandlerBlockquote());
 defaultBBCodeParser.registerTagHandler(new TagHandlerHeader());
 defaultBBCodeParser.registerTagHandler(new TagHandlerList());
+defaultBBCodeParser.registerTagHandler(new TagHandlerNotice());
+defaultBBCodeParser.registerTagHandler(new TagHandlerVideo());
 
 export { defaultBBCodeParser, TagHandler };
 
@@ -44,7 +48,7 @@ global.BBCODE = {
     bbcode2html: function (rawContent: string, forEditor: boolean = false) {
         return defaultBBCodeParser.bbcode2html(rawContent, forEditor);
     },
-    html2bbcode: function (html: string) {
-        return defaultBBCodeParser.html2bbcode(html);
+    html2bbcode: function (html: string, forEditor: boolean = false) {
+        return defaultBBCodeParser.html2bbcode(html, forEditor);
     }
 };

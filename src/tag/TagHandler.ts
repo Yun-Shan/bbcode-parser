@@ -28,10 +28,26 @@ export abstract class TagHandler {
      * @param forEditor 是否是为编辑器生成html（为编辑器生成的html只可用于编辑器，与正常渲染效果不同）
      */
     abstract encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean): string | false;
-    abstract decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string|false;
+    abstract decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false;
 
     splitArgs(rawArg: string): string[] {
         return rawArg.split(';');
+    }
+
+    combineArgs(args: string[]): string {
+        let flag = false;
+        let result = '';
+        for (let i = args.length - 1; i >= 0; i--){
+            const arg = args[i];
+            if (arg) {
+                result = arg + result;
+                flag = true;
+            }
+            if ((flag || arg) && i > 0) {
+                result = ';' + result;
+            }
+        }
+        return result;
     }
 }
 

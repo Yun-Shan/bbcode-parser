@@ -16,8 +16,8 @@ export class TagHandlerBlockquote extends TagHandler {
         return `<blockquote data-tag="quote"><p>${content}</p></blockquote>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[quote]${resloveFun(element.childNodes)}[/quote]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+        return `[quote]${resolveFun(element.childNodes, forEditor)}[/quote]`;
     }
 }
 

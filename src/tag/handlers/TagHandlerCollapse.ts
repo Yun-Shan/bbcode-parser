@@ -19,11 +19,11 @@ export class TagHandlerCollapse extends TagHandler {
         }
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
         const titleE = element.getElementsByClassName('collapse-title');
         const title = titleE.length > 0 ? titleE[0].textContent : '点击展开';
         const contentE = element.getElementsByClassName('collapse-content');
-        const content = contentE.length > 0 ? resloveFun(contentE[0]) : '';
+        const content = contentE.length > 0 ? resolveFun(contentE[0], forEditor) : '';
         return `[collapse=${title}]${content}[/collapse]`;
     }
 }

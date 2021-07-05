@@ -16,7 +16,7 @@ export class TagHandlerItalic extends TagHandler {
         return `<${this.tagName()}>${content}</${this.tagName()}>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[i]${resloveFun(element.childNodes)}[/i]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+        return `[i]${resolveFun(element.childNodes, forEditor)}[/i]`;
     }
 }

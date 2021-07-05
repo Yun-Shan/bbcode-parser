@@ -195,12 +195,10 @@ export class BBCODEParser {
                     }
                     break;
                 }
-                case '\n': {
-                    tmp += '<br/>';
-                    break;
-                }
+                case '\r': break;
                 default: {
                     tmp += char;
+                    break;
                 }
             }
         }
@@ -220,20 +218,20 @@ export class BBCODEParser {
         if (tmp.length > 0) {
             result += tmp;
         }
-        console.log(result);
+        result = result.replace(/\n/g, '<br/>');
         return result;
     }
 
-    html2bbcode(html: string): string {
+    html2bbcode(html: string, forEditor: boolean): string {
         let domList = Array.from(new DOMParser().parseFromString(html, 'text/html').getElementsByTagName('body')[0].childNodes);
         let result = '';
         for (const dom of domList) {
-            result += this.resolveNode(dom);
+            result += this.resolveNode(dom, forEditor);
         }
         return result;
     }
 
-    private resolveNode(nodes: Nodes): string {
+    private resolveNode(nodes: Nodes, forEditor: boolean): string {
         let result = '';
         if (!Array.isArray(nodes)) {
             if (nodes instanceof NodeList || nodes instanceof HTMLCollection) {
@@ -246,8 +244,16 @@ export class BBCODEParser {
             switch (node.nodeType) {
                 case node.ELEMENT_NODE: {
                     const e = node as Element;
+                    if (e.getAttribute('data-cke-temp') === '1' || e.classList.contains('cke_widget_partial_mask')) {
+                        break;
+                    }
                     if (e.tagName.toLowerCase() === 'br') {
-                        result += '\n';
+                        if (forEditor) {
+                            // 由于ckeditor的嵌套转换机制，必须返回html，否则会导致嵌套中无法换行，由最终用户手动替换<br/>
+                            result += '<br/>';
+                        } else {
+                            result += '\n';
+                        }
                         break;
                     }
                     let bbcodeTag = e.getAttribute('data-tag');
@@ -256,9 +262,9 @@ export class BBCODEParser {
                     }
                     const handler = this.getHandler(bbcodeTag);
                     if (handler) {
-                        result += handler.decodeFromHtml(e, this.resolveNode.bind(this));
+                        result += handler.decodeFromHtml(e, this.resolveNode.bind(this), forEditor);
                     } else {
-                        result += this.resolveNode(Array.from(node.childNodes));
+                        result += this.resolveNode(Array.from(node.childNodes), forEditor);
                     }
                     break;
                 }

@@ -20,8 +20,8 @@ export class TagHandlerColor extends TagHandler {
         return `<font color="${arg}" data-tag="color">${content}</font>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
-        return `[color=${element.getAttribute('color')}]${resloveFun(element.childNodes)}[/color]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+        return `[color=${element.getAttribute('color')}]${resolveFun(element.childNodes, forEditor)}[/color]`;
     }
 }
 

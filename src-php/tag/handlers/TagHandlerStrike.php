@@ -4,7 +4,11 @@ require_once(dirname(__FILE__) . "/../TagHandler.php");
 
 class TagHandlerStrike extends TagHandler {
     function tagName() {
-        return "s";
+        return "del";
+    }
+
+    public function tagAliases(): array {
+        return ['s'];
     }
 
     function encodeToHtml($tagLabel, $arg, $content) {

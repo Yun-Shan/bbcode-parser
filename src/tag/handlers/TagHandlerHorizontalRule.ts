@@ -13,7 +13,7 @@ export class TagHandlerHorizontalRule extends TagHandler {
         return '<hr/>';
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
         return '[hr]';
     }
 }

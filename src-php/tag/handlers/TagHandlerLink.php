@@ -12,8 +12,9 @@ class TagHandlerLink extends TagHandler {
             return "";
         }
         if (!$arg) {
-            $arg = '#';
-        } else if (!preg_match('/^((https|http):\/\/)[^\s]+$/', $arg)) {
+            $arg = $content;
+        }
+        if (!preg_match('/^((https|http):\/\/)[^\s]+$/', $arg)) {
             $arg = 'http://' . $arg;
         }
         return "<a href=\"$arg\" data-tag=\"url\">$content</a>";

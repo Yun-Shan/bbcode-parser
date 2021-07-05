@@ -19,7 +19,7 @@ export class TagHandlerDice extends TagHandler {
         return false;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
         const exps = element.getElementsByClassName('dice-expression');
         const exp = exps.length > 0 ? exps[0].textContent : '';
         if (!exp) {

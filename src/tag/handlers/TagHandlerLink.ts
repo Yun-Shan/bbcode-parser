@@ -17,7 +17,7 @@ export class TagHandlerLink extends TagHandler {
         return `<a href="${arg}" data-tag="url">${content}</a>`;
     }
 
-    decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
         return `[url=${element.getAttribute('href')}]${element.textContent}[/url]`;
     }
 }
