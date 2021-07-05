@@ -1,7 +1,7 @@
 <?php
 
 namespace bbcode_parser;
-require_once(dirname(__FILE__) . "./tag/TagHandler.php");
+require_once(dirname(__FILE__) . "/tag/TagHandler.php");
 
 class BBCODEParser
 {
@@ -26,14 +26,14 @@ class BBCODEParser
         if (empty($content)) {
             $content = "";
         }
-        $tagLabel = mb_substr($tagLabel, 1, BBCODE_STRING_CHARSET);
+        $tagLabel = mb_substr($tagLabel, 1, null, BBCODE_STRING_CHARSET);
         $tagName = $this->TAG_ALIASES_MAP[$tagLabel];
         if (!$tagName) {
             return $this->transformAsIs($tagLabel, $arg, $content);
         }
         $handler = $this->TAG_HANDLER_MAP[$tagName];
         if ($handler) {
-            $result = $handler->handle($tagName, $arg, $content);
+            $result = $handler->encodeToHtml($tagName, $arg, $content);
             if (is_string($result)) {
                 return $result;
             }

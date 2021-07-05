@@ -1,6 +1,6 @@
 <?php
 namespace bbcode_parser;
-require_once(dirname(__FILE__) . "../TagHandler.php");
+require_once(dirname(__FILE__) . "/../TagHandler.php");
 
 class TagHandlerDice extends TagHandler {
     function tagName() {

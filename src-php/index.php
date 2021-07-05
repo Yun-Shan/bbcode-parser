@@ -1,12 +1,21 @@
 <?php
 namespace bbcode_parser {
-    require_once(dirname(__FILE__) . "./tag/handlers/TagHandlerBold.php");
-    require_once(dirname(__FILE__) . "./tag/handlers/TagHandlerItalic.php");
-    require_once(dirname(__FILE__) . "./tag/handlers/TagHandlerColor.php");
-    require_once(dirname(__FILE__) . "./tag/handlers/TagHandlerMask.php");
-    require_once(dirname(__FILE__) . "./tag/handlers/TagHandlerCollapse.php");
-    require_once(dirname(__FILE__) . "./tag/handlers/TagHandlerDice.php");
-    require_once(dirname(__FILE__) . "./BBCODEParser.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerBlockquote.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerBold.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerCollapse.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerColor.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerDice.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerHeader.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerHorizontalRule.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerImage.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerItalic.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerLink.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerList.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerMask.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerSize.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerStrike.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerUnderline.php");
+    require_once(dirname(__FILE__) . "/BBCODEParser.php");
     global $defaultBBCodeParser;
     $defaultBBCodeParser = new BBCODEParser();
     $defaultBBCodeParser->registerTagHandler(new TagHandlerBlockquote());
