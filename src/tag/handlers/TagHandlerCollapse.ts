@@ -5,10 +5,6 @@ export class TagHandlerCollapse extends TagHandler {
         return 'collapse';
     };
 
-    tagAliases(): string[] {
-        return [];
-    };
-
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!arg) {
             arg = "点击展开"

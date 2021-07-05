@@ -1,6 +1,8 @@
 export abstract class TagHandler {
     abstract tagName(): string;
-    abstract tagAliases(): string[];
+    tagAliases(): string[] {
+        return [];
+    }
 
     /**
      * 是否是自关闭标签，对于自关闭标签会按content为空，在open tag结束后立刻解析

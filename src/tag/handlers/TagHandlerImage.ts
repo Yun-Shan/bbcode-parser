@@ -22,7 +22,9 @@ export class TagHandlerImage extends TagHandler {
         const marginV = args.length > 4 ? args[4] : '';
         const float = args.length > 5 ? args[5] : '';
 
-        return `<${this.tagName()} src="${arg}"/>`;
+        // alt没必要所以不加
+        // noinspection HtmlRequiredAltAttribute
+        return `<img src="${arg}"/>`;
     }
 
     decodeFromHtml(element: Element, resloveFun: (node: Nodes) => string): string | false {

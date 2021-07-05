@@ -5,10 +5,6 @@ export class TagHandlerColor extends TagHandler {
         return 'color';
     };
 
-    tagAliases(): string[] {
-        return [];
-    };
-
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!content) {
             return '';
@@ -19,7 +15,7 @@ export class TagHandlerColor extends TagHandler {
         if (arg.match(/^[0-9a-fA-F]{6}$/)) {
             arg = '#' + arg;
         }
-        // 只有font能同时兼任行内元素和块状元素，所以即便是font被弃用也得用这个
+        // 只有font能同时兼容行内元素和块状元素，所以即便是font被弃用也得用这个
         // noinspection HtmlDeprecatedTag,HtmlDeprecatedAttribute
         return `<font color="${arg}" data-tag="color">${content}</font>`;
     }

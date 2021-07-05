@@ -13,8 +13,6 @@ export class TagHandlerList extends TagHandler {
         return tagLabel === '*' ? ['list'] : [];
     }
 
-    // TODO 正确完成list的双向转换，增加限制确保[*]仅在list中生效
-
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!content) {
             return '';

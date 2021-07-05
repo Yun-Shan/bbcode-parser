@@ -5,10 +5,6 @@ export class TagHandlerHorizontalRule extends TagHandler {
         return 'hr';
     };
 
-    tagAliases(): string[] {
-        return [];
-    };
-
     isSelfClose(): boolean {
         return true;
     }

@@ -7,7 +7,6 @@
   "scripts": {
     "build": "webpack",
     "build--prod": "webpack --mode=production",
-    "build--php": "ts2php -c ts2php.config.js src/ -o dist-php/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
