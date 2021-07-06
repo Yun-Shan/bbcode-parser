@@ -5,6 +5,10 @@ export class TagHandlerLink extends TagHandler {
         return 'url';
     };
 
+    tagAliases(): string[] {
+        return ['a'];
+    }
+
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
         if (!content) {
             return '';
