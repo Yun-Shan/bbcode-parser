@@ -221,7 +221,7 @@ export class BBCODEParser {
             }
         }
         if (tmp.length > 0) {
-            result += tmp;
+            result += this.filterXSS(tmp);
         }
         result = result.replace(/\n/g, '<br/>');
         return result;

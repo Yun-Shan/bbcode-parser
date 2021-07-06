@@ -198,7 +198,7 @@ class BBCODEParser
             }
         }
         if (!empty($tmp)) {
-            $result .= $tmp;
+            $result .= $this->filterXSS($tmp);
         }
         return mb_ereg_replace('\n', '<br/>', $result, BBCODE_STRING_CHARSET);
     }
