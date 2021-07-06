@@ -17,6 +17,7 @@ import { TagHandlerHeader } from './tag/handlers/TagHandlerHeader';
 import { TagHandlerList } from './tag/handlers/TagHandlerList';
 import {TagHandlerNotice} from "./tag/handlers/TagHandlerNotice";
 import {TagHandlerVideo} from "./tag/handlers/TagHandlerVideo";
+import {TagHandlerSmile} from "./tag/handlers/TagHandlerSmile";
 
 const defaultBBCodeParser = new BBCODEParser();
 defaultBBCodeParser.registerTagHandler(new TagHandlerBold());
@@ -36,6 +37,7 @@ defaultBBCodeParser.registerTagHandler(new TagHandlerHeader());
 defaultBBCodeParser.registerTagHandler(new TagHandlerList());
 defaultBBCodeParser.registerTagHandler(new TagHandlerNotice());
 defaultBBCodeParser.registerTagHandler(new TagHandlerVideo());
+defaultBBCodeParser.registerTagHandler(new TagHandlerSmile());
 
 export { defaultBBCodeParser, TagHandler };
 

@@ -10,8 +10,7 @@ class BBCODEParser
     private static $STATE_BBCODE_CLOSE_START = 2;
     private static $TYPE_TEXT = 0;
     private static $TYPE_BBCODE_OPEN = 1;
-    private $TAG_HANDLER_MAP = [];
-    private $TAG_ALIASES_MAP = [];
+    private $TAG_HANDLER_LIST = [];
 
     function transformAsIs($tagName, $arg, $content): string {
         if ($arg) {
@@ -27,18 +26,14 @@ class BBCODEParser
             $content = "";
         }
         $tagLabel = mb_substr($tagLabel, 1, null, BBCODE_STRING_CHARSET);
-        $tagName = $this->TAG_ALIASES_MAP[$tagLabel];
-        if (!$tagName) {
-            return $this->transformAsIs($tagLabel, $arg, $content);
-        }
-        $handler = $this->TAG_HANDLER_MAP[$tagName];
+        $handler = $this->getHandler($tagLabel);
         if ($handler) {
-            $result = $handler->encodeToHtml($tagName, $arg, $content, $env);
+            $result = $handler->encodeToHtml($tagLabel, $arg, $content, $env);
             if (is_string($result)) {
                 return $result;
             }
         }
-        return $this->transformAsIs($tagName, $arg, $content);
+        return $this->transformAsIs($tagLabel, $arg, $content);
     }
 
     function filterXSS($str) {
@@ -46,16 +41,16 @@ class BBCODEParser
     }
 
     function registerTagHandler($handler) {
-        $this->TAG_HANDLER_MAP[$handler->tagName()] = $handler;
-        $this->TAG_ALIASES_MAP[$handler->tagName()] = $handler->tagName();
-        foreach ($handler->tagAliases() as $alias) {
-            $this->TAG_ALIASES_MAP[$alias] = $handler->tagName();
-        }
+        $this->TAG_HANDLER_LIST[] = $handler;
     }
 
-    function getHandler($tagName): TagHandler {
-        $tagName = $this->TAG_ALIASES_MAP[$tagName];
-        return $this->TAG_HANDLER_MAP[$tagName];
+    function getHandler($tagLabel) {
+        foreach ($this->TAG_HANDLER_LIST as $handler) {
+            if ($handler->match($tagLabel)) {
+                return $handler;
+            }
+        }
+        return null;
     }
 
     function bbcode2html($rawContent, $env) {

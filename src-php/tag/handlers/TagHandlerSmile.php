@@ -2,9 +2,13 @@
 namespace bbcode_parser;
 require_once(dirname(__FILE__) . "/../TagHandler.php");
 
-class TagHandlerHorizontalRule extends TagHandler {
+class TagHandlerSmile extends TagHandler {
     function tagName() {
-        return "hr";
+        return "smile";
+    }
+
+    public function match($tagLabel) {
+        return preg_match('/^s(-\d+)+$/',$tagLabel);
     }
 
     public function isSelfClose() {
@@ -12,6 +16,6 @@ class TagHandlerHorizontalRule extends TagHandler {
     }
 
     function encodeToHtml($tagLabel, $arg, $content, $env) {
-        return "<hr/>";
+        return "[$tagLabel]";
     }
 }

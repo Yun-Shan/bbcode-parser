@@ -4,6 +4,18 @@ export abstract class TagHandler {
         return [];
     }
 
+    match(tagLabel: string): boolean {
+        if (tagLabel === this.tagName()) {
+            return true;
+        }
+        for (const alias of this.tagAliases()) {
+            if (tagLabel === alias) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * 是否是自关闭标签，对于自关闭标签会按content为空，在open tag结束后立刻解析
      * @return {boolean}

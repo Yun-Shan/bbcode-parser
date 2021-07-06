@@ -8,8 +8,7 @@ export class BBCODEParser {
     private static readonly TYPE_TEXT = 0;
     private static readonly TYPE_BBCODE_OPEN = 1;
 
-    private readonly TAG_HANDLER_MAP: { [key: string]: TagHandler } = {};
-    private readonly TAG_ALIASES_MAP: { [key: string]: string } = {};
+    private readonly TAG_HANDLER_LIST: TagHandler[] = [];
 
     transformAsIs(tagName: string, arg: string, content: string): string {
         let openTag = '';
@@ -26,12 +25,7 @@ export class BBCODEParser {
             content = '';
         }
         tagLabel = tagLabel.substring(1);
-        const tagName = this.TAG_ALIASES_MAP[tagLabel];
-        if (!tagName) {
-            return this.transformAsIs(tagLabel, arg, content);
-        }
-
-        const handler = this.TAG_HANDLER_MAP[tagName];
+        const handler = this.getHandler(tagLabel);
         if (handler) {
             const result = handler.encodeToHtml(tagLabel, arg, content, forEditor);
             if (typeof result === 'string') {
@@ -53,16 +47,16 @@ export class BBCODEParser {
     }
 
     registerTagHandler(handler: TagHandler) {
-        this.TAG_HANDLER_MAP[handler.tagName()] = handler;
-        this.TAG_ALIASES_MAP[handler.tagName()] = handler.tagName();
-        for (const alias of handler.tagAliases()) {
-            this.TAG_ALIASES_MAP[alias] = handler.tagName();
-        }
+        this.TAG_HANDLER_LIST.push(handler);
     }
 
-    private getHandler(tagName: string) {
-        tagName = this.TAG_ALIASES_MAP[tagName];
-        return this.TAG_HANDLER_MAP[tagName];
+    private getHandler(tagLabel: string) {
+        for (const handler of this.TAG_HANDLER_LIST) {
+            if (handler.match(tagLabel)) {
+                return handler;
+            }
+        }
+        return null;
     }
 
 // TODO 自定义解析：标签内部嵌套的所有东西都交给自定义解析器，可以自行处理内容解析。用途：[code][/code]、[list][*]xx[/list]

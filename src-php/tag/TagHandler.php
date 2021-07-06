@@ -11,6 +11,18 @@ abstract class TagHandler
         return [];
     }
 
+    function match($tagLabel) {
+        if ($tagLabel === $this->tagName()) {
+            return true;
+        }
+        foreach ($this->tagAliases() as $alias) {
+            if ($tagLabel === $alias) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     abstract function encodeToHtml($tagLabel, $arg, $content, $env);
 
     function isSelfClose() {
