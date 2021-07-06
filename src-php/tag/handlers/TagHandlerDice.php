@@ -4,7 +4,7 @@ namespace bbcode_parser;
 require_once(dirname(__FILE__) . "/../TagHandler.php");
 
 function dice_expression_to_html($content, $env) {
-    $result = preg_match_all("/((\d+d\d+)|(\d+))|([+\-])/", $content, $matches);
+    $result = preg_match_all("/((\d*d\d+)|(\d+))|([+\-])/", $content, $matches);
     if (!$result) {
         return false;
     }
@@ -63,7 +63,7 @@ function dice_expression_to_html($content, $env) {
             default:
                 $pos = strpos($item, 'd');
                 $sign = $carry[2] > 0 ? '+' : '-';
-                if ($pos >= 0) {
+                if ($pos !== false) {
                     // $count 利用php字符串转换数字的规则，可以直接转换不用管'd'后面的内容，当没有count的时候默认为1
                     $count = max(1, intval($item));
                     $max = intval(substr($item, $pos + 1));
@@ -74,7 +74,7 @@ function dice_expression_to_html($content, $env) {
                     $sum = 0;
                     for ($i = 0; $i < $count; $i++) {
                         $val = mt_rand(1, $max);
-                        if ($i > 0) {
+                        if ($carry[0] || $text) {
                             $text .= $sign;
                         }
                         $text .= "d$max($val)";

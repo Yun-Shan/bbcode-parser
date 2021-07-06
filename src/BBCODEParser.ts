@@ -43,6 +43,7 @@ export class BBCODEParser {
 
     filterXSS(str: string): string {
         return str
+            .replace(/\u200B/g,'')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')

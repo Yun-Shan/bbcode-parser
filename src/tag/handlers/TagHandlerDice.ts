@@ -9,7 +9,7 @@ export class TagHandlerDice extends TagHandler {
         if (!content) {
             return '';
         }
-        if (content.match(/^((\d+)|(\d*d\d+))(\+((\d+)|(\d*d\d+)))*$/)) {
+        if (content.match(/^((\d{1,7})|(\d{0,7}d\d{1,7}))([+\-]((\d{1,7})|(\d{0,7}d\d{1,7})))*$/)) {
             if (forEditor) {
                 return `<div data-tag="dice" class="dice"><span><b>骰子ROLL点表达式：</b></span><div class="dice-expression">${content}</div></div>`;
             } else {
@@ -21,7 +21,7 @@ export class TagHandlerDice extends TagHandler {
 
     decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
         const exps = element.getElementsByClassName('dice-expression');
-        const exp = exps.length > 0 ? exps[0].textContent : '';
+        const exp = exps.length > 0 ? exps[0].textContent.replace(/\u200B/g,'') : '';
         if (!exp) {
             return false;
         }
