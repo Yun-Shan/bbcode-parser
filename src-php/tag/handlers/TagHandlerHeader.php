@@ -11,7 +11,7 @@ class TagHandlerHeader extends TagHandler {
         return ['h2', 'h3'];
     }
 
-    function encodeToHtml($tagLabel, $arg, $content) {
+    function encodeToHtml($tagLabel, $arg, $content, $env) {
         if (empty($content) || empty(trim($content))) {
             return "";
         }

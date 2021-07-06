@@ -31,6 +31,9 @@ export class TagHandlerVideo extends TagHandler {
     }
 
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
+        if (arg && arg.indexOf('bv=') === 0) {
+            arg = arg.substring(3);
+        }
         if (!arg) {
             return '';
         }

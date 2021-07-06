@@ -22,7 +22,7 @@ class BBCODEParser
         return "[" . $openTag . "]" . $content . "[/" . $tagName . "]";
     }
 
-    function transformTag($tagLabel, $content, $arg): string {
+    function transformTag($tagLabel, $content, $arg, $env): string {
         if (empty($content)) {
             $content = "";
         }
@@ -33,7 +33,7 @@ class BBCODEParser
         }
         $handler = $this->TAG_HANDLER_MAP[$tagName];
         if ($handler) {
-            $result = $handler->encodeToHtml($tagName, $arg, $content);
+            $result = $handler->encodeToHtml($tagName, $arg, $content, $env);
             if (is_string($result)) {
                 return $result;
             }
@@ -58,7 +58,7 @@ class BBCODEParser
         return $this->TAG_HANDLER_MAP[$tagName];
     }
 
-    function bbcode2html($rawContent) {
+    function bbcode2html($rawContent, $env) {
         $stack = [];
         $parentMap = [];
         $state = self::$STATE_NORMAL;
@@ -96,6 +96,9 @@ class BBCODEParser
                     if ($state === self::$STATE_BBCODE_OPEN_START) {
                         $arg = '';
                         $argIdx = mb_strpos($tmp,"=", 0, BBCODE_STRING_CHARSET);
+                        if ($argIdx <= 0) {
+                            $argIdx = mb_strpos($tmp," ", 0, BBCODE_STRING_CHARSET);
+                        }
                         if ($argIdx > 0) {
                             $arg = mb_substr($tmp, $argIdx + 1, null, BBCODE_STRING_CHARSET);
                             $tag = mb_substr($tmp, 0, $argIdx, BBCODE_STRING_CHARSET);
@@ -120,7 +123,7 @@ class BBCODEParser
                         }
                         if ($allowHandler) {
                             if ($handler->isSelfClose()) {
-                                $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($tag, "", $this->filterXSS($arg))];
+                                $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($tag, "", $this->filterXSS($arg), $env)];
                             } else {
                                 $stack[] = ["type" => self::$TYPE_BBCODE_OPEN, "value" => $tag, "arg" => $this->filterXSS($arg)];
                                 $parentMap[$realTag] = $parentMap[$realTag] ? $parentMap[$realTag] + 1 : 1;
@@ -153,12 +156,12 @@ class BBCODEParser
                                             $parentMap[$subTag] = max($parentMap[$subTag] - 1, 0);
                                         }
                                         if ($tag === $subTag) {
-                                            $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($node['value'], $content, $node['arg'])];
+                                            $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($node['value'], $content, $node['arg'], $env)];
                                             $content = "";
                                             $successClosed = true;
                                             break 2;
                                         } else {
-                                            $content = $this->transformTag($node['value'], $content, $node['arg']);
+                                            $content = $this->transformTag($node['value'], $content, $node['arg'], $env);
                                         }
                                         break;
                                     }
@@ -194,7 +197,7 @@ class BBCODEParser
                     $result .= $tmp;
                     $tmp = "";
                 }
-                $result = $this->transformTag($node["value"], $result, $node["arg"]);
+                $result = $this->transformTag($node["value"], $result, $node["arg"], $env);
             } else if ($node["type"] === self::$TYPE_TEXT) {
                 $result = $node["value"] . $result;
             }

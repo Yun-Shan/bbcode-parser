@@ -7,7 +7,7 @@ class TagHandlerUnderline extends TagHandler {
         return "u";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content) {
+    function encodeToHtml($tagLabel, $arg, $content, $env) {
         if (!$content) {
             return "";
         }

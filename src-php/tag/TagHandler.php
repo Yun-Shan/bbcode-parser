@@ -11,7 +11,7 @@ abstract class TagHandler
         return [];
     }
 
-    abstract function encodeToHtml($tagLabel, $arg, $content);
+    abstract function encodeToHtml($tagLabel, $arg, $content, $env);
 
     function isSelfClose() {
         return false;

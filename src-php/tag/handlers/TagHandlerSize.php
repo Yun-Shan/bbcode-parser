@@ -7,7 +7,7 @@ class TagHandlerSize extends TagHandler {
         return "size";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content) {
+    function encodeToHtml($tagLabel, $arg, $content, $env) {
         if (!$content) {
             return "";
         }

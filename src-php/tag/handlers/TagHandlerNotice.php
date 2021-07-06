@@ -97,7 +97,7 @@ class TagHandlerNotice extends TagHandler
         self::$typeMap['gonglue'] = self::$typeMap['gonglve'];
     }
 
-    function encodeToHtml($tagLabel, $arg, $content) {
+    function encodeToHtml($tagLabel, $arg, $content, $env) {
         $attr = self::$typeMap[$arg];
         if (!$attr) {
             return "[notice=$arg]";

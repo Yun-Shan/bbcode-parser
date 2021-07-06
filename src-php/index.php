@@ -40,9 +40,9 @@ namespace bbcode_parser {
 }
 
 namespace {
-    function bbcode2html($rawContent) {
+    function bbcode2html($rawContent, $env) {
         global $defaultBBCodeParser;
-        return $defaultBBCodeParser->bbcode2html($rawContent);
+        return $defaultBBCodeParser->bbcode2html($rawContent, $env);
     }
 }
 

@@ -7,7 +7,7 @@ class TagHandlerLink extends TagHandler {
         return "url";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content) {
+    function encodeToHtml($tagLabel, $arg, $content, $env) {
         if (!$content) {
             return "";
         }

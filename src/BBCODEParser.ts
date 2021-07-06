@@ -102,7 +102,17 @@ export class BBCODEParser {
                     if (state === BBCODEParser.STATE_BBCODE_OPEN_START) {
                         let tag = '';
                         let arg = '';
-                        let argIdx = tmp.indexOf('=');
+                        // 兼容[tag arg=xx]的形式，等到线上的这种异常格式剩余足够少的时候就可以删掉
+                        let equalsIdx = tmp.indexOf('=');
+                        let argIdx = -1;
+                        if (equalsIdx > 0) {
+                            let spaceIdx = tmp.indexOf(' ');
+                            if (spaceIdx < 0 || spaceIdx > equalsIdx) {
+                                argIdx = equalsIdx;
+                            } else  if (spaceIdx > 0 && spaceIdx < equalsIdx) {
+                                argIdx = spaceIdx;
+                            }
+                        }
                         if (argIdx > 0) {
                             arg = tmp.substring(argIdx + 1);
                             tag = tmp.substring(0, argIdx);
@@ -248,12 +258,7 @@ export class BBCODEParser {
                         break;
                     }
                     if (e.tagName.toLowerCase() === 'br') {
-                        if (forEditor) {
-                            // 由于ckeditor的嵌套转换机制，必须返回html，否则会导致嵌套中无法换行，由最终用户手动替换<br/>
-                            result += '<br/>';
-                        } else {
-                            result += '\n';
-                        }
+                        result += '\n';
                         break;
                     }
                     let bbcodeTag = e.getAttribute('data-tag');
