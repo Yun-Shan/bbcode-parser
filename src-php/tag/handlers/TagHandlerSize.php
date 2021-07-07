@@ -7,16 +7,27 @@ class TagHandlerSize extends TagHandler {
         return "size";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    private static $sizeMap = [0, '12px','13px','16px','18px','24px','32px','48px'];
+
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         if (!$content) {
             return "";
         }
-        if (!$arg || !preg_match('/^[1-7]$/', $arg)) {
+        if (!$arg) {
             return $content;
         }
-        // 只有font能同时兼容行内元素和块状元素，所以即便是font被弃用也得用这个
-        /** @noinspection HtmlDeprecatedTag */
-        /** @noinspection HtmlDeprecatedAttribute */
-        return "<font size=\"$arg\" data-tag=\"size\">$content</font>";
+        if (preg_match('/^[1-7]$/', $arg)) {
+            $size = self::$sizeMap[intval($arg)];
+            $sizeLabel = $arg;
+        } else if (preg_match('/^\d+(\.\d+)?px$/', $arg)) {
+            $size = floatval($arg);
+            if (is_nan($size) || $size < 10 || $size > 50) {
+                $size = 13;
+            }
+            $sizeLabel = $size .= 'px';
+        } else {
+            return $content;
+        }
+        return "<span data-size=\"$sizeLabel\" data-tag=\"size\" style=\"font-size: $size\">$content</span>";
     }
 }

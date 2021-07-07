@@ -42,6 +42,5 @@ export class TagHandlerList extends TagHandler {
             default:
                 return false;
         }
-
     }
 }

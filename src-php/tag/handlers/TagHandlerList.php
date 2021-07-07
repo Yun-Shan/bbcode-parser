@@ -15,7 +15,7 @@ class TagHandlerList extends TagHandler {
         return $tagLabel === '*' ? ['list'] : [];
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         if (!$content) {
             return "";
         }

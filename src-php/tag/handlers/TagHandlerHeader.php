@@ -11,8 +11,8 @@ class TagHandlerHeader extends TagHandler {
         return ['h2', 'h3'];
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
-        if (empty($content) || empty(trim($content))) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
+        if (empty($content) || empty(preg_replace('/\s+/u', '', $content))) {
             return "";
         }
         $tagLabel = mb_strtolower($tagLabel, BBCODE_STRING_CHARSET);

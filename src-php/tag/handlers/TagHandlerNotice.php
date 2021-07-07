@@ -97,10 +97,15 @@ class TagHandlerNotice extends TagHandler
         self::$typeMap['gonglue'] = self::$typeMap['gonglve'];
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         $attr = self::$typeMap[$arg];
         if (!$attr) {
             return "[notice=$arg]";
+        }
+        if (function_exists('bbcode_check_and_update_perm')) {
+            if (!bbcode_check_and_update_perm($env, 'notice', $arg)) {
+                return "[notice=$arg]";
+            }
         }
         $boxClass = $attr['boxClass'];
         $imgSrc = $attr['imgSrc'];

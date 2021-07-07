@@ -15,7 +15,7 @@ class TagHandlerSmile extends TagHandler {
         return true;
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         return "[$tagLabel]";
     }
 }

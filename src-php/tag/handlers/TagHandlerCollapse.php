@@ -7,7 +7,7 @@ class TagHandlerCollapse extends TagHandler {
         return "collapse";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         if ($arg && mb_strpos($arg, "title=", 0, BBCODE_STRING_CHARSET) === 0) {
             $arg = mb_substr($arg, 6, null, BBCODE_STRING_CHARSET);
         }

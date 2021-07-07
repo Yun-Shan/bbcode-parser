@@ -1,23 +1,26 @@
-import { BBCODEParser } from './BBCODEParser';
-import { TagHandler } from './tag/TagHandler';
-import { TagHandlerBold } from './tag/handlers/TagHandlerBold';
-import { TagHandlerItalic } from './tag/handlers/TagHandlerItalic';
-import { TagHandlerColor } from './tag/handlers/TagHandlerColor';
-import { TagHandlerSize } from './tag/handlers/TagHandlerSize';
-import { TagHandlerMask } from './tag/handlers/TagHandlerMask';
-import { TagHandlerCollapse } from './tag/handlers/TagHandlerCollapse';
-import { TagHandlerDice } from './tag/handlers/TagHandlerDice';
-import { TagHandlerUnderline } from './tag/handlers/TagHandlerUnderline';
-import { TagHandlerStrike } from './tag/handlers/TagHandlerStrike';
-import { TagHandlerImage } from './tag/handlers/TagHandlerImage';
-import { TagHandlerHorizontalRule } from './tag/handlers/TagHandlerHorizontalRule';
-import { TagHandlerLink } from './tag/handlers/TagHandlerLink';
-import { TagHandlerBlockquote } from './tag/handlers/TagHandlerBlockquote';
-import { TagHandlerHeader } from './tag/handlers/TagHandlerHeader';
-import { TagHandlerList } from './tag/handlers/TagHandlerList';
+import {BBCODEParser} from './BBCODEParser';
+import {TagHandler} from './tag/TagHandler';
+import {TagHandlerBold} from './tag/handlers/TagHandlerBold';
+import {TagHandlerItalic} from './tag/handlers/TagHandlerItalic';
+import {TagHandlerColor} from './tag/handlers/TagHandlerColor';
+import {TagHandlerSize} from './tag/handlers/TagHandlerSize';
+import {TagHandlerMask} from './tag/handlers/TagHandlerMask';
+import {TagHandlerCollapse} from './tag/handlers/TagHandlerCollapse';
+import {TagHandlerDice} from './tag/handlers/TagHandlerDice';
+import {TagHandlerUnderline} from './tag/handlers/TagHandlerUnderline';
+import {TagHandlerStrike} from './tag/handlers/TagHandlerStrike';
+import {TagHandlerImage} from './tag/handlers/TagHandlerImage';
+import {TagHandlerHorizontalRule} from './tag/handlers/TagHandlerHorizontalRule';
+import {TagHandlerLink} from './tag/handlers/TagHandlerLink';
+import {TagHandlerBlockquote} from './tag/handlers/TagHandlerBlockquote';
+import {TagHandlerHeader} from './tag/handlers/TagHandlerHeader';
+import {TagHandlerList} from './tag/handlers/TagHandlerList';
 import {TagHandlerNotice} from "./tag/handlers/TagHandlerNotice";
 import {TagHandlerVideo} from "./tag/handlers/TagHandlerVideo";
 import {TagHandlerSmile} from "./tag/handlers/TagHandlerSmile";
+import {TagHandlerBackgroundColor} from "./tag/handlers/TagHandlerBackgroundColor";
+import {TagHandlerAlign} from "./tag/handlers/TagHandlerAlign";
+import {TagHandlerTable} from "./tag/handlers/TagHandlerTable";
 
 const defaultBBCodeParser = new BBCODEParser();
 defaultBBCodeParser.registerTagHandler(new TagHandlerBold());
@@ -38,6 +41,9 @@ defaultBBCodeParser.registerTagHandler(new TagHandlerList());
 defaultBBCodeParser.registerTagHandler(new TagHandlerNotice());
 defaultBBCodeParser.registerTagHandler(new TagHandlerVideo());
 defaultBBCodeParser.registerTagHandler(new TagHandlerSmile());
+defaultBBCodeParser.registerTagHandler(new TagHandlerBackgroundColor());
+defaultBBCodeParser.registerTagHandler(new TagHandlerAlign());
+defaultBBCodeParser.registerTagHandler(new TagHandlerTable());
 
 export { defaultBBCodeParser, TagHandler };
 
@@ -48,9 +54,11 @@ global.BBCODE = {
     },
     defaultParser: defaultBBCodeParser,
     bbcode2html: function (rawContent: string, forEditor: boolean = false) {
+        console.log('bbcode2html');
         return defaultBBCodeParser.bbcode2html(rawContent, forEditor);
     },
     html2bbcode: function (html: string, forEditor: boolean = false) {
+        console.log('html2bbcode');
         return defaultBBCodeParser.html2bbcode(html, forEditor);
     }
 };

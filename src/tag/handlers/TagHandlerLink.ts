@@ -22,6 +22,10 @@ export class TagHandlerLink extends TagHandler {
     }
 
     decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
-        return `[url=${element.getAttribute('href')}]${element.textContent}[/url]`;
+        var content = resolveFun(element.childNodes, forEditor);
+        if (!content) {
+            return false;
+        }
+        return `[url=${element.getAttribute('href')}]${content}[/url]`;
     }
 }

@@ -3,7 +3,7 @@
 namespace bbcode_parser;
 require_once(dirname(__FILE__) . "/../TagHandler.php");
 
-function dice_expression_to_html($content, $env) {
+function dice_expression_to_html($content, &$env) {
     $result = preg_match_all("/((\d*d\d+)|(\d+))|([+\-])/", $content, $matches);
     if (!$result) {
         return false;
@@ -32,12 +32,17 @@ function dice_expression_to_html($content, $env) {
     // 固定随机数种子，以保证编辑帖子不会影响骰子结果
     {
         // authorId对于主楼应该是楼主id，对于评论应该是评论者id，总之应该是被解析的内容的原始发布者的ID
-        $authorId = $env['dice']['author_id'];
-        $postId = $env['dice']['post_id'];
-        $commentId = $env['dice']['comment_id'];
+        $authorId = $env['author_id'];
+        $postId = $env['post_id'];
+        $commentId = $env['comment_id'];
 
+        if (empty($env['dice'])) {
+            $env['dice'] = [];
+        }
+        if (empty($env['dice']['index'])) {
+            $env['dice']['index'] = 1;
+        }
         // 骰子序号，用这个保证一楼内的多个骰子结果不相同
-        if (empty($env['dice']['index'])) $env['dice']['index'] = 1;
         $idx = $env['dice']['index'];
 
         // 种子拼接格式为：{序号}{帖子ID}{作者ID*评论ID}，保证任意一个变化时都会时整个数字的二进制值发生较大变化
@@ -50,7 +55,7 @@ function dice_expression_to_html($content, $env) {
         }
         mt_srand(intval($seed));
 
-        $env['dice']['index']++;
+        $env['dice']['index'] = $env['dice']['index'] + 1;
     }
     $diceResult = array_reduce($matches[0], function ($carry, $item) {
         switch ($item) {
@@ -102,7 +107,7 @@ class TagHandlerDice extends TagHandler
         return "dice";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         if (!$content) {
             return "";
         }

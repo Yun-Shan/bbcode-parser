@@ -21,7 +21,7 @@ class BBCODEParser
         return "[" . $openTag . "]" . $content . "[/" . $tagName . "]";
     }
 
-    function transformTag($tagLabel, $content, $arg, $env): string {
+    function transformTag($tagLabel, $content, $arg, &$env): string {
         if (empty($content)) {
             $content = "";
         }
@@ -34,10 +34,6 @@ class BBCODEParser
             }
         }
         return $this->transformAsIs($tagLabel, $arg, $content);
-    }
-
-    function filterXSS($str) {
-        return preg_replace("/ /", "&nbsp;", htmlspecialchars($str, ENT_QUOTES | ENT_HTML401, BBCODE_STRING_CHARSET));
     }
 
     function registerTagHandler($handler) {
@@ -53,7 +49,7 @@ class BBCODEParser
         return null;
     }
 
-    function bbcode2html($rawContent, $env) {
+    function bbcode2html($rawContent, &$env) {
         $stack = [];
         $parentMap = [];
         $state = self::$STATE_NORMAL;
@@ -66,7 +62,7 @@ class BBCODEParser
                 {
                     if ($state === self::$STATE_NORMAL && $idx < mb_strlen($rawContent, BBCODE_STRING_CHARSET)) {
                         if (mb_strlen($tmp, BBCODE_STRING_CHARSET) > 0) {
-                            array_push($stack, ["type" => self::$TYPE_TEXT, "value" => $this->filterXSS($tmp)]);
+                            array_push($stack, ["type" => self::$TYPE_TEXT, "value" => TagHandler::filterXSS($tmp)]);
                         }
                         $tmp = "[";
                         if (mb_substr($rawContent, $idx + 1, 1, BBCODE_STRING_CHARSET) === "/") {
@@ -78,7 +74,7 @@ class BBCODEParser
                         }
                     } else if ($state === self::$STATE_BBCODE_OPEN_START || $state === self::$STATE_BBCODE_CLOSE_START) {
                         if (mb_strlen($tmp, BBCODE_STRING_CHARSET) > 0) {
-                            $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->filterXSS($tmp)];
+                            $stack[] = ["type" => self::$TYPE_TEXT, "value" => TagHandler::filterXSS($tmp)];
                             $tmp = "[";
                         }
                     } else {
@@ -118,9 +114,9 @@ class BBCODEParser
                         }
                         if ($allowHandler) {
                             if ($handler->isSelfClose()) {
-                                $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($tag, "", $this->filterXSS($arg), $env)];
+                                $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($tag, "", TagHandler::filterXSS($arg), $env)];
                             } else {
-                                $stack[] = ["type" => self::$TYPE_BBCODE_OPEN, "value" => $tag, "arg" => $this->filterXSS($arg)];
+                                $stack[] = ["type" => self::$TYPE_BBCODE_OPEN, "value" => $tag, "arg" => TagHandler::filterXSS($arg)];
                                 $parentMap[$realTag] = $parentMap[$realTag] ? $parentMap[$realTag] + 1 : 1;
                             }
 
@@ -198,7 +194,7 @@ class BBCODEParser
             }
         }
         if (!empty($tmp)) {
-            $result .= $this->filterXSS($tmp);
+            $result .= TagHandler::filterXSS($tmp);
         }
         return mb_ereg_replace('\n', '<br/>', $result, BBCODE_STRING_CHARSET);
     }

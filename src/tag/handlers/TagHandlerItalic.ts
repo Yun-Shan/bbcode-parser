@@ -6,7 +6,7 @@ export class TagHandlerItalic extends TagHandler {
     };
 
     tagAliases(): string[] {
-        return [];
+        return ['em'];
     };
 
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {

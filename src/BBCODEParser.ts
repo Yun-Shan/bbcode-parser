@@ -1,4 +1,5 @@
 import { TagHandler } from './tag/TagHandler';
+import {TagHandlerCompatible} from "./tag/handlers/TagHandlerCompatible";
 
 
 export class BBCODEParser {
@@ -9,6 +10,7 @@ export class BBCODEParser {
     private static readonly TYPE_BBCODE_OPEN = 1;
 
     private readonly TAG_HANDLER_LIST: TagHandler[] = [];
+    private readonly compatible = new TagHandlerCompatible();
 
     transformAsIs(tagName: string, arg: string, content: string): string {
         let openTag = '';
@@ -33,17 +35,6 @@ export class BBCODEParser {
             }
         }
         return this.transformAsIs(tagLabel, arg, content);
-    }
-
-    filterXSS(str: string): string {
-        return str
-            .replace(/\u200B/g,'')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/ /g, '&nbsp;');
     }
 
     registerTagHandler(handler: TagHandler) {
@@ -73,7 +64,7 @@ export class BBCODEParser {
                 case '[': {
                     if (state === BBCODEParser.STATE_NORMAL && idx < rawContent.length) {
                         if (tmp.length > 0) {
-                            stack.push({type: BBCODEParser.TYPE_TEXT, value: this.filterXSS(tmp)});
+                            stack.push({type: BBCODEParser.TYPE_TEXT, value: TagHandler.filterXSS(tmp)});
                         }
                         tmp = '[';
                         if (rawContent[idx + 1] === '/') {
@@ -85,7 +76,7 @@ export class BBCODEParser {
                         }
                     } else if (state === BBCODEParser.STATE_BBCODE_OPEN_START || state === BBCODEParser.STATE_BBCODE_CLOSE_START) {
                         if (tmp.length > 0) {
-                            stack.push({type: BBCODEParser.TYPE_TEXT, value: this.filterXSS(tmp)});
+                            stack.push({type: BBCODEParser.TYPE_TEXT, value: TagHandler.filterXSS(tmp)});
                             tmp = '[';
                         }
                     } else {
@@ -134,13 +125,13 @@ export class BBCODEParser {
                             if (handler.isSelfClose()) {
                                 stack.push({
                                     type: BBCODEParser.TYPE_TEXT,
-                                    value: this.transformTag(tag, '', this.filterXSS(arg), forEditor)
+                                    value: this.transformTag(tag, '', arg, forEditor)
                                 });
                             } else {
                                 stack.push({
                                     type: BBCODEParser.TYPE_BBCODE_OPEN,
                                     value: tag,
-                                    arg: this.filterXSS(arg)
+                                    arg: arg
                                 });
                                 parentMap[realTag] = parentMap[realTag] ? parentMap[realTag] + 1 : 1;
                             }
@@ -221,7 +212,7 @@ export class BBCODEParser {
             }
         }
         if (tmp.length > 0) {
-            result += this.filterXSS(tmp);
+            result += TagHandler.filterXSS(tmp);
         }
         result = result.replace(/\n/g, '<br/>');
         return result;
@@ -260,9 +251,13 @@ export class BBCODEParser {
                     if (!bbcodeTag) {
                         bbcodeTag = e.tagName.toLowerCase();
                     }
-                    const handler = this.getHandler(bbcodeTag);
-                    if (handler) {
-                        result += handler.decodeFromHtml(e, this.resolveNode.bind(this), forEditor);
+                    let handler = this.getHandler(bbcodeTag);
+                    if (!handler) {
+                        handler = this.compatible;
+                    }
+                    let decodeResult = handler.decodeFromHtml(e, this.resolveNode.bind(this), forEditor);
+                    if (decodeResult) {
+                        result += decodeResult;
                     } else {
                         result += this.resolveNode(Array.from(node.childNodes), forEditor);
                     }

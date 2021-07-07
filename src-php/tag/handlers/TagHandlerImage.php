@@ -11,7 +11,7 @@ class TagHandlerImage extends TagHandler {
         return true;
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         $args = $this->splitArgs($arg);
         $src = $args[0] ?: '#';
         $width = count($args) > 1 ? intval($args[1]) : '';

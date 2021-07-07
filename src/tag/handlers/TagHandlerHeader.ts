@@ -10,7 +10,7 @@ export class TagHandlerHeader extends TagHandler {
     };
 
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
-        if (!content || content.trim().length === 0) {
+        if (!content || content.replace(/ +/g, '').length === 0) {
             return '';
         }
         tagLabel = tagLabel.toLowerCase();

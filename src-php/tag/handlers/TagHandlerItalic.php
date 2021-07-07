@@ -7,7 +7,7 @@ class TagHandlerItalic extends TagHandler {
         return "i";
     }
 
-    function encodeToHtml($tagLabel, $arg, $content, $env) {
+    function encodeToHtml($tagLabel, $arg, $content, &$env) {
         if (!$content) {
             return "";
         }

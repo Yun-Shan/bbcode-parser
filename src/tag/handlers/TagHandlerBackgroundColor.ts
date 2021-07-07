@@ -1,8 +1,8 @@
 import { TagHandler } from '../TagHandler';
 
-export class TagHandlerColor extends TagHandler {
+export class TagHandlerBackgroundColor extends TagHandler {
     tagName(): string {
-        return 'color';
+        return 'bgcolor';
     };
 
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {
@@ -13,11 +13,11 @@ export class TagHandlerColor extends TagHandler {
         if (!arg) {
             return content;
         }
-        return `<span data-color="${arg}" data-tag="color" style="color: ${arg}">${content}</span>`;
+        return `<span data-color="${arg}" data-tag="bgcolor" style="background-color: ${arg}">${content}</span>`;
     }
 
     decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
-        return `[color=${element.getAttribute('data-color')}]${resolveFun(element.childNodes, forEditor)}[/color]`;
+        return `[bgcolor=${element.getAttribute('data-color')}]${resolveFun(element.childNodes, forEditor)}[/bgcolor]`;
     }
 }
 

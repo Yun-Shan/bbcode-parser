@@ -48,8 +48,8 @@ export class TagHandlerImage extends TagHandler {
         const float = img.style.float;
         let args = this.combineArgs([src, width, height, float]);
         if (!args) {
-           args = '#';
+           args = '=#';
         }
-        return `[img=${args}]`;
+        return `[img${args}]`;
     }
 }
