@@ -64,7 +64,7 @@ export abstract class TagHandler {
         return result;
     }
 
-    checkSize(val: string) {
+    checkSize(val: string, unit: string = 'px') {
         if (!val) {
             return '';
         }
@@ -72,7 +72,16 @@ export abstract class TagHandler {
             return val;
         }
         if (val.match(/^\d{1,4}(\.\d{1,4})?$/g)) {
-            return `${parseFloat(val)}px`;
+            return `${parseFloat(val)}${unit}`;
+        }
+        return '';
+    }
+
+    checkWhitelistValue(val: string, whitelist: string[]) {
+        for (const str of whitelist) {
+            if (val === str) {
+                return val;
+            }
         }
         return '';
     }

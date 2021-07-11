@@ -24,17 +24,17 @@ class TagHandlerNotice extends TagHandler
             'speech'       => '博士，这几页我先帮你存着。',
             'notification' => '<b>本帖内容含剧透成分。</b>想要享受游戏探索/解谜乐趣的玩家请自行离开。',
         ],
-        'rmt'     => [
-            'imgSrc'       => 'https://gitee.com/nemo1166/img-gallery/raw/master/img/20720aaac96bb824570ec92f651ffd7be84370b8.png',
-            'boxClass'     => 'ambox-blue',
-            'speech'       => '小心钱包（这句话是阿米娅说的）',
-            'notification' => '<b>该帖子涉及现实货币交易。</b>请注意资产安全。',
-        ],
         'predict' => [
             'imgSrc'       => 'https://gitee.com/nemo1166/img-gallery/raw/master/img/9156ab90139c76dbeb7420384c2ac691ab86097f.png',
             'boxClass'     => 'ambox-blue',
             'speech'       => '罗德岛的档案里没有诶...',
             'notification' => '<b>该帖子含推测内容。</b>请以官方消息为准，小心甄别。',
+        ],
+        'rmt'     => [
+            'imgSrc'       => 'https://gitee.com/nemo1166/img-gallery/raw/master/img/20720aaac96bb824570ec92f651ffd7be84370b8.png',
+            'boxClass'     => 'ambox-blue',
+            'speech'       => '小心钱包（这句话是阿米娅说的）',
+            'notification' => '<b>该帖子涉及现实货币交易。</b>请注意资产安全。',
         ],
         'warn'    => [
             'imgSrc'       => 'https://gitee.com/nemo1166/img-gallery/raw/master/img/20210626213733.png',

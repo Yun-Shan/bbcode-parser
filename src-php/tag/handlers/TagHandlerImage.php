@@ -14,26 +14,21 @@ class TagHandlerImage extends TagHandler {
     function encodeToHtml($tagLabel, $arg, $content, &$env) {
         $args = $this->splitArgs($arg);
         $src = $args[0] ?: '#';
-        $width = count($args) > 1 ? intval($args[1]) : '';
-        $height = count($args) > 2 ? intval($args[2]) : '';
-        $float = count($args) > 3 ? $args[3] : '';
+        $width = count($args) > 1 ? $this->checkSize($args[1]) : '';
+        $height = count($args) > 2 ? $this->checkSize($args[2]) : '';
+        $float = count($args) > 3 ? $this->checkWhitelistValue($args[3], ['left', 'right']) : '';
 
-        $result = "<img src=\"$src\"";
-        $styleValue = '';
-        if ($width > 0) {
-            $styleValue .= 'width:' . $width . 'px;';
+        $result = $this->combineAttributes([
+            'src'=> $src,
+            'style' => $this->combineStyles([
+                'width'=> $width,
+                'height'=> $height,
+                'float'=> $float,
+            ])
+        ]);
+        if (empty($result)) {
+            return false;
         }
-        if ($height > 0) {
-            $styleValue .= 'height:' . $height . 'px;';
-        }
-        switch ($float) {
-            case 'left': $styleValue .= 'float:left;'; break;
-            case 'right': $styleValue .= 'float:right;'; break;
-            default: break;
-        }
-        if ($styleValue) {
-            $result .= ' style="' . $styleValue . '"';
-        }
-        return $result . '/>';
+        return '<img' . $result . '/>';
     }
 }

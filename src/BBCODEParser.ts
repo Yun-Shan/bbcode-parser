@@ -53,6 +53,7 @@ export class BBCODEParser {
 // TODO 自定义解析：标签内部嵌套的所有东西都交给自定义解析器，可以自行处理内容解析。用途：[code][/code]、[list][*]xx[/list]
 // TODO 特殊解析：[code]标签应该忽略正常的闭合标签，直到找到了[/code]或者到达字符串末尾
     bbcode2html(rawContent: string, forEditor: boolean = false): string {
+        rawContent = rawContent.replace(/\xC2\xA0/g, ' ');
         // TODO any改接口
         const stack: any[] = [];
         const parentMap: any = {};
@@ -264,7 +265,7 @@ export class BBCODEParser {
                     break;
                 }
                 case node.TEXT_NODE: {
-                    result += node.textContent.replace(/[\n\r ]/g, '');
+                    result += node.textContent.replace(/\r+/g, '');
                     break;
                 }
                 default:

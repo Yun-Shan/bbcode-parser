@@ -71,7 +71,7 @@ abstract class TagHandler
         return $result;
     }
 
-    function checkSize($val) {
+    function checkSize($val, $unit = 'px') {
         if (!$val) {
             return '';
         }
@@ -79,7 +79,16 @@ abstract class TagHandler
             return $val;
         }
         if (preg_match('/^\d{1,4}(\.\d{1,4})?$/', $val)) {
-            return number_format($val, 2) . 'px';
+            return number_format($val, 2) . $unit;
+        }
+        return '';
+    }
+
+    function checkWhitelistValue($val, $whitelist = []) {
+        foreach ($whitelist as $str) {
+            if ($val === $str) {
+                return $val;
+            }
         }
         return '';
     }

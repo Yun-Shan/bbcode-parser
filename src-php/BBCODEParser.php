@@ -50,6 +50,7 @@ class BBCODEParser
     }
 
     function bbcode2html($rawContent, &$env) {
+        $rawContent = preg_replace('/\xC2\xA0/', ' ', $rawContent);
         $stack = [];
         $parentMap = [];
         $state = self::$STATE_NORMAL;
