@@ -1,4 +1,4 @@
-import { TagHandler } from './tag/TagHandler';
+import {TagHandler} from './tag/TagHandler';
 import {TagHandlerCompatible} from "./tag/handlers/TagHandlerCompatible";
 
 
@@ -6,8 +6,9 @@ export class BBCODEParser {
     private static readonly STATE_NORMAL = 0;
     private static readonly STATE_BBCODE_OPEN_START = 1;
     private static readonly STATE_BBCODE_CLOSE_START = 2;
-    private static readonly TYPE_TEXT = 0;
-    private static readonly TYPE_BBCODE_OPEN = 1;
+    public static readonly TYPE_TEXT = 0;
+    public static readonly TYPE_BBCODE_OPEN = 1;
+    public static readonly TYPE_BBCODE_CLOSE = 2;
 
     private readonly TAG_HANDLER_LIST: TagHandler[] = [];
     private readonly compatible = new TagHandlerCompatible();
@@ -59,6 +60,7 @@ export class BBCODEParser {
         const parentMap: any = {};
         let state = BBCODEParser.STATE_NORMAL;
         let tmp = '';
+        let customParserState = 0;
         for (let idx = 0; idx < rawContent.length; idx++) {
             const char = rawContent[idx];
             switch (char) {
@@ -96,7 +98,7 @@ export class BBCODEParser {
                             let spaceIdx = tmp.indexOf(' ');
                             if (spaceIdx < 0 || spaceIdx > equalsIdx) {
                                 argIdx = equalsIdx;
-                            } else  if (spaceIdx > 0 && spaceIdx < equalsIdx) {
+                            } else if (spaceIdx > 0 && spaceIdx < equalsIdx) {
                                 argIdx = spaceIdx;
                             }
                         }
@@ -132,8 +134,13 @@ export class BBCODEParser {
                                 stack.push({
                                     type: BBCODEParser.TYPE_BBCODE_OPEN,
                                     value: tag,
-                                    arg: arg
+                                    arg: TagHandler.filterXSS(arg),
+                                    customParser: handler.useCustomParser(),
+                                    contentOffset: idx + 1
                                 });
+                                if (handler.useCustomParser()) {
+                                    customParserState++;
+                                }
                                 parentMap[realTag] = parentMap[realTag] ? parentMap[realTag] + 1 : 1;
                             }
                             tmp = '';
@@ -145,8 +152,18 @@ export class BBCODEParser {
                         const tag = tmp.substring(2);
                         const handler = this.getHandler(tag);
                         if (handler && !handler.isSelfClose()) {
+                            if (customParserState > 0 && !handler.useCustomParser()) {
+                                stack.push({
+                                    type: BBCODEParser.TYPE_BBCODE_CLOSE,
+                                    value: tag
+                                });
+                                tmp = '';
+                                state = BBCODEParser.STATE_NORMAL;
+                                break;
+                            }
                             let content = '';
                             let successClosed = false;
+                            let subStack = [];
                             out: while (true) {
                                 const node = stack.pop();
                                 if (!node) {
@@ -154,25 +171,51 @@ export class BBCODEParser {
                                 }
                                 switch (node.type) {
                                     case BBCODEParser.TYPE_TEXT: {
+                                        subStack.push(node);
                                         content = node.value + content;
                                         break;
                                     }
                                     case BBCODEParser.TYPE_BBCODE_OPEN: {
+                                        subStack.push(node);
                                         const subTag = node.value.substring(1);
                                         if (parentMap[subTag]) {
                                             parentMap[subTag] = Math.max(parentMap[subTag] - 1, 0);
                                         }
                                         if (tag === subTag) {
-                                            stack.push({
-                                                type: BBCODEParser.TYPE_TEXT,
-                                                value: this.transformTag(node.value, content, node.arg, forEditor)
-                                            });
+                                            if (node.customParser) {
+                                                stack.push({
+                                                    type: BBCODEParser.TYPE_TEXT,
+                                                    value: handler.parseStackToHtml(subStack, rawContent, node.contentOffset, idx - tmp.length, this, forEditor)
+                                                });
+                                                customParserState--;
+                                            } else if (customParserState > 0) {
+                                                stack.push(node);
+                                                stack.push({
+                                                    type: BBCODEParser.TYPE_TEXT,
+                                                    value: content
+                                                });
+                                                stack.push({
+                                                    type: BBCODEParser.TYPE_BBCODE_CLOSE,
+                                                    value: tag
+                                                });
+                                            } else {
+                                                stack.push({
+                                                    type: BBCODEParser.TYPE_TEXT,
+                                                    value: this.transformTag(node.value, content, node.arg, forEditor)
+                                                });
+                                            }
+                                            subStack = [];
                                             content = '';
                                             successClosed = true;
                                             break out;
                                         } else {
                                             content = this.transformTag(node.value, content, node.arg, forEditor);
                                         }
+                                        break;
+                                    }
+                                    case BBCODEParser.TYPE_BBCODE_CLOSE: {
+                                        subStack.push(node);
+                                        break;
                                     }
                                 }
                             }
@@ -192,7 +235,8 @@ export class BBCODEParser {
                     }
                     break;
                 }
-                case '\r': break;
+                case '\r':
+                    break;
                 default: {
                     tmp += char;
                     break;
@@ -220,7 +264,8 @@ export class BBCODEParser {
     }
 
     html2bbcode(html: string, forEditor: boolean): string {
-        let domList = Array.from(new DOMParser().parseFromString(html, 'text/html').getElementsByTagName('body')[0].childNodes);
+        let domList = Array.from(new DOMParser().parseFromString(html.replace(/\u200B/g, ''), 'text/html')
+            .getElementsByTagName('body')[0].childNodes);
         let result = '';
         for (const dom of domList) {
             result += this.resolveNode(dom, forEditor);

@@ -1,4 +1,7 @@
-import { TagHandler } from '../TagHandler';
+import {TagHandler} from '../TagHandler';
+import {BBCODEParser} from "../../BBCODEParser";
+
+// list要注意在li末尾是换行的情况下增加零宽空格(&#8203;或者写成\u200B)，并且在html向bbcode反向解析的时候去掉这个零宽空格，保证只在渲染结果里有这个
 
 export class TagHandlerList extends TagHandler {
     tagName(): string {
@@ -9,8 +12,60 @@ export class TagHandlerList extends TagHandler {
         return ['ul', 'ol', 'li', '*'];
     };
 
-    allowParents(tagLabel:string): string[] {
+    allowParents(tagLabel: string): string[] {
         return tagLabel === '*' ? ['list'] : [];
+    }
+
+    useCustomParser(): boolean {
+        return true;
+    }
+
+    parseStackToHtml(stack: any[], rawContent: string, startIdx: number, endIdx: number, parser: BBCODEParser, forEditor: boolean): string {
+        let result = '';
+        let tmp = '';
+        let tmpStack: any[] = [];
+        for (let i = 0; i < stack.length; i++) {
+            const node = stack[i];
+            switch (node.type) {
+                case BBCODEParser.TYPE_TEXT: {
+                    tmp = node.value + tmp;
+                    break;
+                }
+                case BBCODEParser.TYPE_BBCODE_OPEN: {
+                    const subTag = node.value.substring(1);
+                    switch (subTag) {
+                        case 'list':
+                            const tagName = node.arg ? 'ol' : 'ul';
+                            if (tmp.trim()) {
+                                if (tmp.endsWith('\n')) {
+                                    tmp += '&#8203;';
+                                }
+                                result = `<li>${tmp}</li>` + result;
+                            }
+                            result = `<${tagName}>${result}</${tagName}>`;
+                            tmp = '';
+                            break;
+                        case '*':
+                            if (tmp.endsWith('\n')) {
+                                tmp += '&#8203;';
+                            }
+                            result = `<li>${tmp}</li>` + result;
+                            tmp = '';
+                            break;
+                        default:
+                            tmp = parser.transformTag(node.value, tmp, node.arg, forEditor) + tmpStack.pop();
+                            break;
+                    }
+                    break;
+                }
+                case BBCODEParser.TYPE_BBCODE_CLOSE: {
+                    tmpStack.push(tmp);
+                    tmp = '';
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean = false): string | false {

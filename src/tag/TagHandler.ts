@@ -1,3 +1,5 @@
+import {BBCODEParser} from "../BBCODEParser";
+
 export abstract class TagHandler {
     abstract tagName(): string;
 
@@ -26,11 +28,23 @@ export abstract class TagHandler {
     }
 
     /**
+     * 是否使用自定义解析
+     * @return {boolean}
+     */
+    useCustomParser() {
+        return false;
+    }
+
+    /**
      * 允许的父元素，留空表示全部允许
      * @return {string[]}
      */
     allowParents(tagLabel: string): string[] {
         return [];
+    }
+
+    parseStackToHtml(stack: any[], rawContent: string, startIdx: number, endIdx: number, parser: BBCODEParser, forEditor: boolean): string {
+        return '';
     }
 
     /**
@@ -91,7 +105,7 @@ export abstract class TagHandler {
             return '';
         }
         val = val.replace(/ +/g, '');
-        if (val.match(/^(#[0-9a-fA-F]{6})|([a-zA-Z]{1,20})$/g)) {
+        if (val.match(/^((#[0-9a-fA-F]{3})|(#[0-9a-fA-F]{6})|([a-zA-Z]{1,20}))$/g)) {
             return val;
         }
         if (val.match(/^(rgb\(\d{1,3}(,\d{1,3}){2}\))|(rgba\(\d{1,3}(,\d{1,3}){2},(0\.)?\d{1,2}\))$/g)) {
@@ -142,6 +156,20 @@ export abstract class TagHandler {
             result = "=" + result;
         }
         return result;
+    }
+
+    static unfilteredXSS(str: any): string {
+        if (typeof str !== "string") {
+            return String(str);
+        }
+        return str
+            .replace(/\u200B/g, '')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '\"')
+            .replace(/&#39;/g, '\'')
+            .replace(/&nbsp;/g, ' ');
     }
 
     static filterXSS(str: any): string {

@@ -23,15 +23,27 @@ abstract class TagHandler
         return false;
     }
 
-    abstract function encodeToHtml($tagLabel, $arg, $content, &$env);
-
     function isSelfClose() {
+        return false;
+    }
+
+    /**
+     * 是否使用自定义解析
+     * @return boolean
+     */
+    function useCustomParser() {
         return false;
     }
 
     function allowParents($tagLabel) {
         return [];
     }
+
+    function parseStackToHtml($stack, $rawContent, $startIdx, $endIdx, $parser, &$env) {
+        return '';
+    }
+
+    abstract function encodeToHtml($tagLabel, $arg, $content, &$env);
 
     function splitArgs($rawArg) {
         return preg_split('/;/u', $rawArg);
@@ -98,7 +110,7 @@ abstract class TagHandler
             return '';
         }
         $val = preg_replace('/ +/u', '', $val);
-        if (preg_match('/^(#[0-9a-fA-F]{6})|([a-zA-Z]{1,20})$/', $val)) {
+        if (preg_match('/^((#[0-9a-fA-F]{3})|(#[0-9a-fA-F]{6})|([a-zA-Z]{1,20}))$/', $val)) {
             return $val;
         }
         if (preg_match('/^(rgb\(\d{1,3}(,\d{1,3}){2}\))|(rgba\(\d{1,3}(,\d{1,3}){2},(0\.)?\d{1,2}\))$/', $val)) {

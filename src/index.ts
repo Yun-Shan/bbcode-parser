@@ -21,6 +21,7 @@ import {TagHandlerSmile} from "./tag/handlers/TagHandlerSmile";
 import {TagHandlerBackgroundColor} from "./tag/handlers/TagHandlerBackgroundColor";
 import {TagHandlerAlign} from "./tag/handlers/TagHandlerAlign";
 import {TagHandlerTable} from "./tag/handlers/TagHandlerTable";
+import {TagHandlerCode} from "./tag/handlers/TagHandlerCode";
 
 const defaultBBCodeParser = new BBCODEParser();
 defaultBBCodeParser.registerTagHandler(new TagHandlerBold());
@@ -44,6 +45,7 @@ defaultBBCodeParser.registerTagHandler(new TagHandlerSmile());
 defaultBBCodeParser.registerTagHandler(new TagHandlerBackgroundColor());
 defaultBBCodeParser.registerTagHandler(new TagHandlerAlign());
 defaultBBCodeParser.registerTagHandler(new TagHandlerTable());
+defaultBBCodeParser.registerTagHandler(new TagHandlerCode());
 
 export { defaultBBCodeParser, TagHandler };
 

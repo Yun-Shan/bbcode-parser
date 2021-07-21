@@ -3,13 +3,14 @@
 namespace bbcode_parser;
 require_once(dirname(__FILE__) . "/tag/TagHandler.php");
 
-class BBCODEParser
-{
+class BBCODEParser {
     private static $STATE_NORMAL = 0;
     private static $STATE_BBCODE_OPEN_START = 1;
     private static $STATE_BBCODE_CLOSE_START = 2;
-    private static $TYPE_TEXT = 0;
-    private static $TYPE_BBCODE_OPEN = 1;
+    public static $TYPE_TEXT = 0;
+    public static $TYPE_BBCODE_OPEN = 1;
+    public static $TYPE_BBCODE_CLOSE = 2;
+
     private $TAG_HANDLER_LIST = [];
 
     function transformAsIs($tagName, $arg, $content): string {
@@ -55,6 +56,7 @@ class BBCODEParser
         $parentMap = [];
         $state = self::$STATE_NORMAL;
         $tmp = "";
+        $customParserState = 0;
         $rawContentLen = mb_strlen($rawContent, BBCODE_STRING_CHARSET);
         for ($idx = 0; $idx < $rawContentLen; $idx++) {
             $char = mb_substr($rawContent, $idx, 1, BBCODE_STRING_CHARSET);
@@ -87,9 +89,9 @@ class BBCODEParser
                 {
                     if ($state === self::$STATE_BBCODE_OPEN_START) {
                         $arg = '';
-                        $argIdx = mb_strpos($tmp,"=", 0, BBCODE_STRING_CHARSET);
+                        $argIdx = mb_strpos($tmp, "=", 0, BBCODE_STRING_CHARSET);
                         if ($argIdx <= 0) {
-                            $argIdx = mb_strpos($tmp," ", 0, BBCODE_STRING_CHARSET);
+                            $argIdx = mb_strpos($tmp, " ", 0, BBCODE_STRING_CHARSET);
                         }
                         if ($argIdx > 0) {
                             $arg = mb_substr($tmp, $argIdx + 1, null, BBCODE_STRING_CHARSET);
@@ -115,9 +117,21 @@ class BBCODEParser
                         }
                         if ($allowHandler) {
                             if ($handler->isSelfClose()) {
-                                $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($tag, "", TagHandler::filterXSS($arg), $env)];
+                                $stack[] = [
+                                    "type"  => self::$TYPE_TEXT,
+                                    "value" => $this->transformTag($tag, "", TagHandler::filterXSS($arg), $env)
+                                ];
                             } else {
-                                $stack[] = ["type" => self::$TYPE_BBCODE_OPEN, "value" => $tag, "arg" => TagHandler::filterXSS($arg)];
+                                $stack[] = [
+                                    "type"          => self::$TYPE_BBCODE_OPEN,
+                                    "value"         => $tag,
+                                    "arg"           => TagHandler::filterXSS($arg),
+                                    "customParser"  => $handler->useCustomParser(),
+                                    "contentOffset" => $idx + 1,
+                                ];
+                                if ($handler->useCustomParser()) {
+                                    $customParserState++;
+                                }
                                 $parentMap[$realTag] = $parentMap[$realTag] ? $parentMap[$realTag] + 1 : 1;
                             }
 
@@ -130,31 +144,72 @@ class BBCODEParser
                         $tag = mb_substr($tmp, 2, null, BBCODE_STRING_CHARSET);
                         $handler = $this->getHandler($tag);
                         if ($handler && !$handler->isSelfClose()) {
+                            if ($customParserState > 0 && !$handler->useCustomParser()) {
+                                $stack[] = [
+                                    "type"  => self::$TYPE_BBCODE_CLOSE,
+                                    "value" => $tag
+                                ];
+                                $tmp = "";
+                                $state = self::$STATE_NORMAL;
+                                break;
+                            }
                             $content = "";
                             $successClosed = false;
+                            $subStack = [];
                             while (true) {
                                 $node = array_pop($stack);
                                 if (!$node) {
                                     break;
                                 }
                                 switch ($node['type']) {
-                                    case self::$TYPE_TEXT: {
+                                    case self::$TYPE_TEXT:
+                                    {
+                                        $subStack[] = $node;
                                         $content = $node['value'] . $content;
                                         break;
                                     }
-                                    case self::$TYPE_BBCODE_OPEN: {
+                                    case self::$TYPE_BBCODE_OPEN:
+                                    {
+                                        $subStack[] = $node;
                                         $subTag = mb_substr($node['value'], 1, null, BBCODE_STRING_CHARSET);
                                         if ($parentMap[$subTag]) {
                                             $parentMap[$subTag] = max($parentMap[$subTag] - 1, 0);
                                         }
                                         if ($tag === $subTag) {
-                                            $stack[] = ["type" => self::$TYPE_TEXT, "value" => $this->transformTag($node['value'], $content, $node['arg'], $env)];
+                                            if ($node['customParser']) {
+                                                $stack[] = [
+                                                    "type"  => self::$TYPE_TEXT,
+                                                    "value" => $handler->parseStackToHtml($subStack, $rawContent, $node['contentOffset'], $idx - mb_strlen($tmp, BBCODE_STRING_CHARSET), $this, $env)
+                                                ];
+                                                $customParserState--;
+                                            } else if ($customParserState > 0) {
+                                                $stack[] = $node;
+                                                $stack[] = [
+                                                    "type"  => self::$TYPE_TEXT,
+                                                    "value" => $content
+                                                ];
+                                                $stack[] = [
+                                                    "type"  => self::$TYPE_BBCODE_CLOSE,
+                                                    "value" => $tag
+                                                ];
+                                            } else {
+                                                $stack[] = [
+                                                    "type"  => self::$TYPE_TEXT,
+                                                    "value" => $this->transformTag($node['value'], $content, $node['arg'], $env)
+                                                ];
+                                            }
+                                            $subStack = [];
                                             $content = "";
                                             $successClosed = true;
                                             break 2;
                                         } else {
                                             $content = $this->transformTag($node['value'], $content, $node['arg'], $env);
                                         }
+                                        break;
+                                    }
+                                    case self::$TYPE_BBCODE_CLOSE:
+                                    {
+                                        $subStack[] = $node;
                                         break;
                                     }
                                 }
@@ -175,6 +230,8 @@ class BBCODEParser
                     }
                     break;
                 }
+                case '\r':
+                    break;
                 default:
                 {
                     $tmp .= $char;
