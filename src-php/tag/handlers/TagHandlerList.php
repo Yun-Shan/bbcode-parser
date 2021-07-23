@@ -40,7 +40,7 @@ class TagHandlerList extends TagHandler {
                             $tagName = $node['arg'] ? 'ol' : 'ul';
                             if (trim($tmp)) {
                                 $endChar = mb_substr($tmp, -1, 1, BBCODE_STRING_CHARSET);
-                                if ($endChar === '\n') {
+                                if ($endChar === "\n") {
                                     $tmp .= '&#8203;';
                                 }
                                 $result = '<li>' . $tmp . '</li>' . $result;
@@ -52,7 +52,7 @@ class TagHandlerList extends TagHandler {
                         case '*':
                         {
                             $endChar = mb_substr($tmp, -1, 1, BBCODE_STRING_CHARSET);
-                            if ($endChar === '\n') {
+                            if ($endChar === "\n") {
                                 $tmp .= '&#8203;';
                             }
                             $result = '<li>' . $tmp . '</li>' . $result;
