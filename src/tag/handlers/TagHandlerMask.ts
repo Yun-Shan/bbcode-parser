@@ -16,7 +16,7 @@ export class TagHandlerMask extends TagHandler {
         }
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
-        return `[mask]${resolveFun(element.childNodes, forEditor)}[/mask]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
+        return `[mask]${resolveFun(element.childNodes, forEditor, parentStyle)}[/mask]`;
     }
 }

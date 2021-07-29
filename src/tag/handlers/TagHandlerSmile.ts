@@ -17,7 +17,7 @@ export class TagHandlerSmile extends TagHandler {
         return `[${tagLabel}]`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         return false;
     }
 }

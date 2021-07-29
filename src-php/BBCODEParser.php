@@ -52,6 +52,7 @@ class BBCODEParser {
 
     function bbcode2html($rawContent, &$env) {
         $rawContent = preg_replace('/\xC2\xA0/', ' ', $rawContent);
+        $rawContent = preg_replace('/\u200B/', '', $rawContent);
         $stack = [];
         $parentMap = [];
         $state = self::$STATE_NORMAL;
@@ -126,10 +127,10 @@ class BBCODEParser {
                                     "type"          => self::$TYPE_BBCODE_OPEN,
                                     "value"         => $tag,
                                     "arg"           => TagHandler::filterXSS($arg),
-                                    "customParser"  => $handler->useCustomParser(),
+                                    "customParser"  => $handler->useCustomParser($realTag),
                                     "contentOffset" => $idx + 1,
                                 ];
-                                if ($handler->useCustomParser()) {
+                                if ($handler->useCustomParser($realTag)) {
                                     $customParserState++;
                                 }
                                 $parentMap[$realTag] = $parentMap[$realTag] ? $parentMap[$realTag] + 1 : 1;
@@ -144,7 +145,7 @@ class BBCODEParser {
                         $tag = mb_substr($tmp, 2, null, BBCODE_STRING_CHARSET);
                         $handler = $this->getHandler($tag);
                         if ($handler && !$handler->isSelfClose()) {
-                            if ($customParserState > 0 && !$handler->useCustomParser()) {
+                            if ($customParserState > 0 && !$handler->useCustomParser($tag)) {
                                 $stack[] = [
                                     "type"  => self::$TYPE_BBCODE_CLOSE,
                                     "value" => $tag

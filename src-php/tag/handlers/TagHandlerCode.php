@@ -7,7 +7,7 @@ class TagHandlerCode extends TagHandler {
         return "code";
     }
 
-    public function useCustomParser() {
+    public function useCustomParser($tagLabel) {
         return true;
     }
 

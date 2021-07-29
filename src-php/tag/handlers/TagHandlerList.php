@@ -16,8 +16,8 @@ class TagHandlerList extends TagHandler {
         return $tagLabel === '*' ? ['list'] : [];
     }
 
-    public function useCustomParser() {
-        return true;
+    public function useCustomParser($tagLabel) {
+        return $tagLabel === 'list';
     }
 
     public function parseStackToHtml($stack, $rawContent, $startIdx, $endIdx, $parser, &$env) {

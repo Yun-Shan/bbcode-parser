@@ -2,6 +2,7 @@ import {TagHandler} from '../TagHandler';
 import {BBCODEParser} from "../../BBCODEParser";
 
 // list要注意在li末尾是换行的情况下增加零宽空格(&#8203;或者写成\u200B)，并且在html向bbcode反向解析的时候去掉这个零宽空格，保证只在渲染结果里有这个
+// \u200B的去除由html2bbcode方法统一完成，不需要在此类中关心
 
 export class TagHandlerList extends TagHandler {
     tagName(): string {
@@ -16,8 +17,8 @@ export class TagHandlerList extends TagHandler {
         return tagLabel === '*' ? ['list'] : [];
     }
 
-    useCustomParser(): boolean {
-        return true;
+    useCustomParser(tagLabel: string): boolean {
+        return tagLabel === 'list';
     }
 
     parseStackToHtml(stack: any[], rawContent: string, startIdx: number, endIdx: number, parser: BBCODEParser, forEditor: boolean): string {
@@ -86,14 +87,14 @@ export class TagHandlerList extends TagHandler {
         return `<${tag}>${content}</${tag}>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         switch (element.tagName.toLowerCase()) {
             case 'ul':
-                return `[list]${resolveFun(element.childNodes, forEditor)}[/list]`;
+                return `[list]${resolveFun(element.childNodes, forEditor, parentStyle)}[/list]`;
             case 'ol':
-                return `[list=1]${resolveFun(element.childNodes, forEditor)}[/list]`;
+                return `[list=1]${resolveFun(element.childNodes, forEditor, parentStyle)}[/list]`;
             case 'li':
-                return `[*]${resolveFun(element.childNodes, forEditor)}`;
+                return `[*]${resolveFun(element.childNodes, forEditor, parentStyle)}`;
             default:
                 return false;
         }

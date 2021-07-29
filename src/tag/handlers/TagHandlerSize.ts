@@ -34,8 +34,14 @@ export class TagHandlerSize extends TagHandler {
         return `<span data-size="${sizeLabel}" data-tag="size" style="font-size: ${size}">${content}</span>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
-        return `[size=${element.getAttribute('data-size')}]${resolveFun(element.childNodes, forEditor)}[/size]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
+        const currentSize = element.getAttribute('data-size');
+        if (parentStyle['size'] === currentSize) {
+            return resolveFun(element.childNodes, forEditor, parentStyle);
+        } else {
+            parentStyle['size'] = currentSize
+            return `[size=${currentSize}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/size]`;
+        }
     }
 }
 

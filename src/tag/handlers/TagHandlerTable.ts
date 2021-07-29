@@ -88,7 +88,7 @@ export class TagHandlerTable extends TagHandler {
         }
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         let width;
         let height;
         let bgcolor;
@@ -107,12 +107,12 @@ export class TagHandlerTable extends TagHandler {
                 cellSpacing = parseInt(e.cellspacing);
                 cellPadding = parseInt(e.cellpadding);
                 args = this.combineArgs([width, height, bgcolor, alignH, cellSpacing, cellPadding]);
-                return `[table${args}]${resolveFun(element.childNodes, forEditor)}[/table]`;
+                return `[table${args}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/table]`;
             case 'tr':
                 height = this.checkSize(e.style.height);
                 bgcolor = this.checkColor(e.style.backgroundColor);
                 args = this.combineArgs([height, bgcolor]);
-                return `[tr${args}]${resolveFun(element.childNodes, forEditor)}[/tr]`;
+                return `[tr${args}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/tr]`;
             case 'td':
                 width = this.checkSize(e.style.width);
                 height = this.checkSize(e.style.height);
@@ -123,7 +123,7 @@ export class TagHandlerTable extends TagHandler {
                 const rowspan = parseInt(e.rowSpan) > 1 ? parseInt(e.rowSpan) : 0;
                 const colspan = parseInt(e.colSpan) > 1 ? parseInt(e.colSpan) : 0;
                 args = this.combineArgs([width, height, bgcolor, alignH, alignV, rowspan, colspan]);
-                return `[td${args}]${resolveFun(element.childNodes, forEditor)}[/td]`;
+                return `[td${args}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/td]`;
             default:
                 return false;
         }

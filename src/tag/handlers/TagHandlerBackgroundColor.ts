@@ -16,8 +16,8 @@ export class TagHandlerBackgroundColor extends TagHandler {
         return `<span data-color="${arg}" data-tag="bgcolor" style="background-color: ${arg}">${content}</span>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
-        return `[bgcolor=${element.getAttribute('data-color')}]${resolveFun(element.childNodes, forEditor)}[/bgcolor]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
+        return `[bgcolor=${element.getAttribute('data-color')}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/bgcolor]`;
     }
 }
 

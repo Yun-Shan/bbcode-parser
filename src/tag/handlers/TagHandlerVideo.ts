@@ -49,7 +49,7 @@ export class TagHandlerVideo extends TagHandler {
         }
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         const type = element.getAttribute('data-video-type');
         const value = element.getAttribute('data-video-value');
         if (!type || !value || !TagHandlerVideo.typeMap[type]) {

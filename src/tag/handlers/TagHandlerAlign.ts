@@ -28,9 +28,9 @@ export class TagHandlerAlign extends TagHandler {
         return `<div style="text-align: ${align}" data-tag="align">${content}</div>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         const align = (element as any).style.textAlign;
-        return `[${align}]${resolveFun(element.childNodes, forEditor)}[/${align}]`;
+        return `[${align}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/${align}]`;
     }
 }
 

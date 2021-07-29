@@ -31,7 +31,7 @@ export abstract class TagHandler {
      * 是否使用自定义解析
      * @return {boolean}
      */
-    useCustomParser() {
+    useCustomParser(tagLabel: string): boolean {
         return false;
     }
 
@@ -56,7 +56,7 @@ export abstract class TagHandler {
      */
     abstract encodeToHtml(tagLabel: string, arg: string, content: string, forEditor: boolean): string | false;
 
-    abstract decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false;
+    abstract decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false;
 
     splitArgs(rawArg: string): string[] {
         return rawArg.split(';');

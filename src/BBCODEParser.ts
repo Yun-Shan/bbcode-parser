@@ -54,7 +54,7 @@ export class BBCODEParser {
 // TODO 自定义解析：标签内部嵌套的所有东西都交给自定义解析器，可以自行处理内容解析。用途：[code][/code]、[list][*]xx[/list]
 // TODO 特殊解析：[code]标签应该忽略正常的闭合标签，直到找到了[/code]或者到达字符串末尾
     bbcode2html(rawContent: string, forEditor: boolean = false): string {
-        rawContent = rawContent.replace(/\xC2\xA0/g, ' ');
+        rawContent = rawContent.replace(/\u200B/g, '').replace(/\xC2\xA0/g, ' ');
         // TODO any改接口
         const stack: any[] = [];
         const parentMap: any = {};
@@ -135,10 +135,10 @@ export class BBCODEParser {
                                     type: BBCODEParser.TYPE_BBCODE_OPEN,
                                     value: tag,
                                     arg: TagHandler.filterXSS(arg),
-                                    customParser: handler.useCustomParser(),
+                                    customParser: handler.useCustomParser(realTag),
                                     contentOffset: idx + 1
                                 });
-                                if (handler.useCustomParser()) {
+                                if (handler.useCustomParser(realTag)) {
                                     customParserState++;
                                 }
                                 parentMap[realTag] = parentMap[realTag] ? parentMap[realTag] + 1 : 1;
@@ -152,7 +152,7 @@ export class BBCODEParser {
                         const tag = tmp.substring(2);
                         const handler = this.getHandler(tag);
                         if (handler && !handler.isSelfClose()) {
-                            if (customParserState > 0 && !handler.useCustomParser()) {
+                            if (customParserState > 0 && !handler.useCustomParser(tag)) {
                                 stack.push({
                                     type: BBCODEParser.TYPE_BBCODE_CLOSE,
                                     value: tag
@@ -268,12 +268,12 @@ export class BBCODEParser {
             .getElementsByTagName('body')[0].childNodes);
         let result = '';
         for (const dom of domList) {
-            result += this.resolveNode(dom, forEditor);
+            result += this.resolveNode(dom, forEditor, {});
         }
         return result;
     }
 
-    private resolveNode(nodes: Nodes, forEditor: boolean): string {
+    private resolveNode(nodes: Nodes, forEditor: boolean, parentStyle: any): string {
         let result = '';
         if (!Array.isArray(nodes)) {
             if (nodes instanceof NodeList || nodes instanceof HTMLCollection) {
@@ -301,11 +301,13 @@ export class BBCODEParser {
                     if (!handler) {
                         handler = this.compatible;
                     }
-                    let decodeResult = handler.decodeFromHtml(e, this.resolveNode.bind(this), forEditor);
+                    // 拷贝对象，避免内部的修改影响下一次循环
+                    const cloneParentStyle = JSON.parse(JSON.stringify(parentStyle));
+                    let decodeResult = handler.decodeFromHtml(e, this.resolveNode.bind(this), forEditor, cloneParentStyle);
                     if (decodeResult) {
                         result += decodeResult;
                     } else {
-                        result += this.resolveNode(Array.from(node.childNodes), forEditor);
+                        result += this.resolveNode(Array.from(node.childNodes), forEditor, cloneParentStyle);
                     }
                     break;
                 }

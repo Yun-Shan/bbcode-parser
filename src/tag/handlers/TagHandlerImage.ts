@@ -33,7 +33,7 @@ export class TagHandlerImage extends TagHandler {
         return `<img${result}/>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         const img: any = element;
         const src = element.getAttribute('src');
         const width = this.checkSize(img.style.width);

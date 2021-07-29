@@ -118,7 +118,7 @@ export class TagHandlerNotice extends TagHandler {
         return `<div data-tag="notice" data-notice-type="${arg}" class="ambox"><table class="${attr.boxClass}"><tbody><tr><td class="ambox-image"><img src="${attr.imgSrc}"/></td><td class="ambox-notice"><span class="notice-bubble"><span class="notice-bubble-line"></span><i><b class="notice-speech">${attr.speech}</b></i></span><br><span class="notice-text">${attr.notification}</span></td></tr></tbody></table></div>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         const type = element.getAttribute('data-notice-type');
         if (!type || !TagHandlerNotice.typeMap[type]) {
             return '';

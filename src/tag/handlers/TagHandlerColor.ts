@@ -16,8 +16,14 @@ export class TagHandlerColor extends TagHandler {
         return `<span data-color="${arg}" data-tag="color" style="color: ${arg}">${content}</span>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
-        return `[color=${element.getAttribute('data-color')}]${resolveFun(element.childNodes, forEditor)}[/color]`;
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
+        const currentColor = element.getAttribute('data-color');
+        if (parentStyle['color'] === currentColor) {
+            return resolveFun(element.childNodes, forEditor, parentStyle);
+        } else {
+            parentStyle['color'] = currentColor
+            return `[color=${currentColor}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/color]`;
+        }
     }
 }
 

@@ -17,8 +17,8 @@ export class TagHandlerHeader extends TagHandler {
         return `<${tagLabel}>${content}</${tagLabel}>`;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         const tag = element.tagName.toLowerCase();
-        return `[${tag}]${resolveFun(element.childNodes, forEditor)}[/${tag}]`;
+        return `[${tag}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/${tag}]`;
     }
 }

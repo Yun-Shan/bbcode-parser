@@ -6,7 +6,7 @@ export class TagHandlerCode extends TagHandler {
         return 'code';
     };
 
-    useCustomParser(): boolean {
+    useCustomParser(tagLabel: string): boolean {
         return true;
     }
 
@@ -23,7 +23,7 @@ export class TagHandlerCode extends TagHandler {
         return false;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         let content = element.getElementsByClassName('code-content')[0].innerHTML;
         content = content.replace(/<br\/?>/gi, '\n');
         content = TagHandler.unfilteredXSS(content);

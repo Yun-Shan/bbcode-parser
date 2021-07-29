@@ -31,7 +31,7 @@ abstract class TagHandler
      * 是否使用自定义解析
      * @return boolean
      */
-    function useCustomParser() {
+    function useCustomParser($tagLabel) {
         return false;
     }
 

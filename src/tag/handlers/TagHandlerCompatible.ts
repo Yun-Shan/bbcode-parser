@@ -5,6 +5,10 @@ export class TagHandlerCompatible extends TagHandler {
         return 'compatible';
     };
 
+    match(tagLabel: string): boolean {
+        return false;
+    }
+
     isSelfClose(): boolean {
         return true;
     }
@@ -13,7 +17,7 @@ export class TagHandlerCompatible extends TagHandler {
         return content ? content : false;
     }
 
-    handleStyle(e: any, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean, wrapperTag: any, addBreakLine: boolean = false) {
+    handleStyle(e: any, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any, wrapperTag: any, addBreakLine: boolean = false) {
         let wrapper: any;
         if (typeof wrapperTag === 'string') {
             wrapper = document.createElement('span');
@@ -98,24 +102,24 @@ export class TagHandlerCompatible extends TagHandler {
                 inner.appendChild(node);
             }
             if (addBreakLine) {
-                return `\n${resolveFun(wrapper, forEditor)}\n`;
+                return `\n${resolveFun(wrapper, forEditor, parentStyle)}\n`;
             } else {
-                return resolveFun(wrapper, forEditor);
+                return resolveFun(wrapper, forEditor, parentStyle);
             }
         }
         return false;
     }
 
-    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean) => string, forEditor: boolean): string | false {
+    decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
         const e = element as any;
         switch (e.tagName.toLowerCase()) {
             case 'h4':
-                return this.handleStyle(e, resolveFun, forEditor, 'span');
+                return this.handleStyle(e, resolveFun, forEditor, parentStyle, 'span');
             case 'span':
-                return this.handleStyle(e, resolveFun, forEditor, 'span');
+                return this.handleStyle(e, resolveFun, forEditor, parentStyle, 'span');
             case 'p':
             case 'div':
-                return this.handleStyle(e, resolveFun, forEditor, 'div', true);
+                return this.handleStyle(e, resolveFun, forEditor, parentStyle, 'div', true);
             default:
                 return false;
         }
