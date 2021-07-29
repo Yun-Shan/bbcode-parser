@@ -16,6 +16,7 @@ class TagHandlerSize extends TagHandler {
         if (!$arg) {
             return $content;
         }
+        // 这里因为要支持1-7这样的特殊格式的文字大小，所以不使用checkSize而是自行判断
         if (preg_match('/^[1-7]$/', $arg)) {
             $size = self::$sizeMap[intval($arg)];
             $sizeLabel = $arg;

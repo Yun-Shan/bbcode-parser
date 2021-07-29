@@ -16,6 +16,7 @@ export class TagHandlerSize extends TagHandler {
         }
         let size: any = '';
         let sizeLabel: any = '';
+        // 这里因为要支持1-7这样的特殊格式的文字大小，所以不使用checkSize而是自行判断
         if (arg.match(/^[1-7]$/g)) {
             size = this.sizeMap[parseInt(arg)];
             sizeLabel = arg;
@@ -29,8 +30,6 @@ export class TagHandlerSize extends TagHandler {
         } else {
             return content;
         }
-        // 只有font能同时兼容行内元素和块状元素，所以即便是font被弃用也得用这个
-        // noinspection HtmlDeprecatedTag,HtmlDeprecatedAttribute
         return `<span data-size="${sizeLabel}" data-tag="size" style="font-size: ${size}">${content}</span>`;
     }
 
