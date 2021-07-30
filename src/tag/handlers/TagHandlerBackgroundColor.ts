@@ -17,7 +17,13 @@ export class TagHandlerBackgroundColor extends TagHandler {
     }
 
     decodeFromHtml(element: Element, resolveFun: (node: Nodes, forEditor: boolean, parentStyle: any) => string, forEditor: boolean, parentStyle: any): string | false {
-        return `[bgcolor=${element.getAttribute('data-color')}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/bgcolor]`;
+        const currentBgColor = element.getAttribute('data-color');
+        if (parentStyle['bgcolor'] === currentBgColor) {
+            return resolveFun(element.childNodes, forEditor, parentStyle);
+        } else {
+            parentStyle['bgcolor'] = currentBgColor
+            return `[bgcolor=${currentBgColor}]${resolveFun(element.childNodes, forEditor, parentStyle)}[/bgcolor]`;
+        }
     }
 }
 

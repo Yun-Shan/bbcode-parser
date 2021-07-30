@@ -1,6 +1,7 @@
 import {TagHandler} from './tag/TagHandler';
 import {TagHandlerCompatible} from "./tag/handlers/TagHandlerCompatible";
 
+declare var global: any;
 
 export class BBCODEParser {
     private static readonly STATE_NORMAL = 0;
@@ -268,7 +269,8 @@ export class BBCODEParser {
             .getElementsByTagName('body')[0].childNodes);
         let result = '';
         for (const dom of domList) {
-            result += this.resolveNode(dom, forEditor, {});
+            const cloneDefaultStyle = JSON.parse(JSON.stringify(global.BBCODE.defaultStyle));
+            result += this.resolveNode(dom, forEditor, cloneDefaultStyle);
         }
         return result;
     }

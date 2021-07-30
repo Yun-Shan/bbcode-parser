@@ -50,7 +50,17 @@ defaultBBCodeParser.registerTagHandler(new TagHandlerCode());
 export { defaultBBCodeParser, TagHandler };
 
 declare var global: any;
+const _defaultStyle: any = {};
 global.BBCODE = {
+    get defaultStyle() {
+        return _defaultStyle;
+    },
+    clearDefaultStyle: function() {
+        for(let key in _defaultStyle){
+            delete _defaultStyle[key];
+        }
+        return _defaultStyle;
+    },
     newParser: function () {
         return new BBCODEParser();
     },
