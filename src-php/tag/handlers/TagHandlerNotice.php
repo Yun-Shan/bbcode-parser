@@ -13,7 +13,7 @@ class TagHandlerNotice extends TagHandler
         return ['feedback', 'essence'];
     }
 
-    public function isSelfClose(): bool {
+    public function isSelfClose() {
         return true;
     }
 

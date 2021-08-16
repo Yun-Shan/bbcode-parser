@@ -18,6 +18,7 @@ namespace bbcode_parser {
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerUnderline.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerNotice.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerVideo.php");
+    require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerAudio.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerSmile.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerTable.php");
     require_once(dirname(__FILE__) . "/tag/handlers/TagHandlerBackgroundColor.php");

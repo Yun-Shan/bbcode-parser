@@ -13,7 +13,7 @@ class TagHandlerVideo extends TagHandler
         return ['bvideo'];
     }
 
-    public function isSelfClose(): bool {
+    public function isSelfClose() {
         return true;
     }
 
@@ -35,7 +35,7 @@ class TagHandlerVideo extends TagHandler
         }
         $template = self::$typeMap[$tagLabel];
         if (!$template) {
-            return "[$template=$arg]";
+            return "[$tagLabel=$arg]";
         }
 
         return '<div data-tag="video">' . preg_replace('/__VIDEO_VALUE__/', $arg, $template) . '</div>';
